@@ -2,4 +2,4 @@
 
 
 
-Lendo o readme, mas rabalhar que é bom nada né.
+Lendo o readme, mas trabalhar que é bom nada né.
