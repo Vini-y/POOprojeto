@@ -1,11 +1,10 @@
-import DAO.AdminDAO;
-import DAO.ClientDAO;
-import DAO.SellerDAO;
+import DAO.*;
 import Utils.DatabaseConnection;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Menu {
 
@@ -13,43 +12,171 @@ public class Menu {
     private ClientDAO clientDAO;
     private AdminDAO adminDAO;
     private SellerDAO sellerDAO;
+    private SupplierDAO supplierDAO;
+    private ProductDAO productDAO;
+    private String clienteTipo;
 
-    public Menu() {
+    public Menu(String clienteTipo) {
         scanner = new Scanner(System.in);
         clientDAO = new ClientDAO();
         adminDAO = new AdminDAO();
         sellerDAO = new SellerDAO();
+        supplierDAO = new SupplierDAO();
+        productDAO = new ProductDAO();
+        this.clienteTipo = clienteTipo;
+    }
+
+    private ArrayList<String> filtrarOpcoes() {
+        ArrayList<String> opcoes = new ArrayList<>();
+
+        // Cadastrar
+        opcoes.add("Cadastrar Admin"); // Admin
+        opcoes.add("Cadastrar Vendedor"); // Admin
+        opcoes.add("Cadastrar Cliente"); // Admin e Vendedor
+        opcoes.add("Cadastrar Fornecedor"); // Admin e Vendedor
+        opcoes.add("Cadastrar Produto"); // Admin e Vendedor
+
+        // Listar
+        opcoes.add("Listar Vendedor"); // Admin e Vendedor
+        opcoes.add("Listar Cliente"); // Admin e Vendedor
+        opcoes.add("Listar Fornecedor"); // Admin e Vendedor
+        opcoes.add("Listar Produto"); // Admin e Vendedor
+
+        // Editar
+        opcoes.add("Editar Vendedor"); // Admin e Vendedor
+        opcoes.add("Editar Cliente"); // Admin e Vendedor
+        opcoes.add("Editar Fornecedor"); // Admin e Vendedor
+        opcoes.add("Editar Produto"); // Admin e Vendedor
+
+        // Deletar
+        opcoes.add("Deletar Vendedor"); // Admin
+        opcoes.add("Deletar Cliente"); // Admin
+        opcoes.add("Deletar Fornecedor"); // Admin
+        opcoes.add("Deletar Produto"); // Admin
+
+        // Venda
+        opcoes.add("Registrar Venda");
+        opcoes.add("Listar Vendas");
+
+        opcoes.add("Fechamento do Dia");
+        opcoes.add("Sair");
+
+        // Filter Menu
+        ArrayList<String> filteredOpcoes = new ArrayList<>();
+
+        for (String o : opcoes) {
+            // Se tipo de cliente é "seller"
+            if (clienteTipo.equals("Seller")) {
+                // Filtrar os seguintes valores
+                if (!(o.contains("Deletar") || o.contains("Cadastrar Admin") || o.contains("Cadastrar Vendedor"))) {
+                    filteredOpcoes.add(o);
+                }
+            } else if (clienteTipo.equals("Supplier") || clienteTipo.equals("Client")) {
+                if ((o.contains("Sair"))) {
+                    filteredOpcoes.add(o);
+                }
+            } else {
+                filteredOpcoes.add(o);
+            }
+        }
+
+        return filteredOpcoes;
     }
 
     public void exibirMenu() {
         try {
             DatabaseConnection.connect();
 
-            int option = 0;
+            ArrayList<String> opcoes = filtrarOpcoes();
+            int option = -1;
 
-            while (option != 99) {
+            while (option != opcoes.size() - 1) { // The last option should be "Sair"
                 System.out.println("Menu:");
-                System.out.println("1. Inserir Cliente");
-                System.out.println("2. Inserir Admin");
-                System.out.println("3. Inserir Vendedor");
-                System.out.println("99. Sair");
+                for (int i = 0; i < opcoes.size(); i++) {
+                    System.out.println("(" + i + ") " + opcoes.get(i));
+                }
+
                 System.out.print("Escolha uma opção: ");
                 option = scanner.nextInt();
                 scanner.nextLine(); // Consume newline left-over
 
-                if (option == 1) {
-                    inserirCliente();
-                } else if (option == 2) {
-                    inserirAdmin();
-                } else if (option == 3) {
-                    inserirVendedor();
-                } else if (option == 99) {
-                    System.out.println("Saindo...");
-                    DatabaseConnection.disconnect();
-                    scanner.close();
-                    System.exit(0);
-                } else {
+                if (option < 0 || option >= opcoes.size()) {
                     System.out.println("Opção inválida. Tente novamente.");
+                    continue;
+                }
+
+                String selectedOption = opcoes.get(option);
+
+                switch (selectedOption) {
+                    case "Cadastrar Admin":
+                        inserirAdmin();
+                        break;
+                    case "Cadastrar Vendedor":
+                        inserirVendedor();
+                        break;
+                    case "Cadastrar Cliente":
+                        inserirCliente();
+                        break;
+                    case "Cadastrar Fornecedor":
+                        // implementar inserirFornecedor()
+                        break;
+                    case "Cadastrar Produto":
+                        // implementar inserirProduto()
+                        break;
+                    case "Listar Vendedor":
+                        // implementar listarVendedor()
+                        break;
+                    case "Listar Cliente":
+                        // implementar listarCliente()
+                        break;
+                    case "Listar Fornecedor":
+                        // implementar listarFornecedor()
+                        break;
+                    case "Listar Produto":
+                        // implementar listarProduto()
+                        break;
+                    case "Editar Vendedor":
+                        // implementar editarVendedor()
+                        break;
+                    case "Editar Cliente":
+                        // implementar editarCliente()
+                        break;
+                    case "Editar Fornecedor":
+                        // implementar editarFornecedor()
+                        break;
+                    case "Editar Produto":
+                        // implementar editarProduto()
+                        break;
+                    case "Deletar Vendedor":
+                        // implementar deletarVendedor()
+                        break;
+                    case "Deletar Cliente":
+                        // implementar deletarCliente()
+                        break;
+                    case "Deletar Fornecedor":
+                        // implementar deletarFornecedor()
+                        break;
+                    case "Deletar Produto":
+                        // implementar deletarProduto()
+                        break;
+                    case "Registrar Venda":
+                        // implementar registrarVenda()
+                        break;
+                    case "Listar Vendas":
+                        // implementar listarVendas()
+                        break;
+                    case "Fechamento do Dia":
+                        // implementar fechamentoDoDia()
+                        break;
+                    case "Sair":
+                        System.out.println("Saindo...");
+                        DatabaseConnection.disconnect();
+                        scanner.close();
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                        break;
                 }
             }
         } catch (SQLException e) {
@@ -177,4 +304,5 @@ public class Menu {
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
+
 }
