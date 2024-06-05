@@ -1,6 +1,7 @@
 package Models;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Sale {
@@ -8,6 +9,7 @@ public class Sale {
     private Client client;  // Referência ao objeto Client
     private Seller seller;  // Referência ao objeto Seller
     private Date sale_date;
+    private ArrayList <SaleItens> itens;
     private Pay payment;  // Referência ao objeto Pay
     private float total_value;
     private int parcelas;
@@ -42,6 +44,14 @@ public class Sale {
 
     public void setSale_date(Date sale_date) {
         this.sale_date = sale_date;
+    }
+
+    public ArrayList<SaleItens> getItens() {
+        return itens;
+    }
+
+    public void setItens(ArrayList<SaleItens> itens) {
+        this.itens = itens;
     }
 
     public Pay getPayment() {
