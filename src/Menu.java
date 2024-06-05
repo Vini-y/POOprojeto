@@ -23,6 +23,7 @@ public class Menu {
         sellerDAO = new SellerDAO();
         supplierDAO = new SupplierDAO();
         productDAO = new ProductDAO();
+
         this.clienteTipo = clienteTipo;
     }
 
