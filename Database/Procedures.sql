@@ -171,6 +171,46 @@ BEGIN
     VALUES (p_sale_id, p_product_id, p_quantity);
 END //
 
+CREATE PROCEDURE update_client(
+    IN p_id_client INT,
+    IN p_name VARCHAR(45),
+    IN p_email VARCHAR(45),
+    IN p_senha VARCHAR(45),
+    IN p_last_name VARCHAR(45),
+    IN p_cpf VARCHAR(45),
+    IN p_birth_date DATE,
+    IN p_phone_number VARCHAR(45),
+    IN p_city VARCHAR(45),
+    IN p_state VARCHAR(45),
+    IN p_country VARCHAR(45),
+    IN p_address VARCHAR(45),
+    IN p_address_number VARCHAR(20)
+)
+BEGIN
+    DECLARE address_id INT;
+
+    -- Update User
+    UPDATE User
+    SET name = p_name, email = p_email, senha = p_senha
+    WHERE id_user = p_id_client;
+
+    -- Get Address ID
+    SELECT address_id INTO address_id
+    FROM Person
+    WHERE id_person = p_id_client;
+
+    -- Update Address
+    UPDATE Address
+    SET city = p_city, state = p_state, country = p_country, address = p_address, address_number = p_address_number
+    WHERE id_address = address_id;
+
+    -- Update Person
+    UPDATE Person
+    SET last_name = p_last_name, cpf = p_cpf, birth_date = p_birth_date, phone_number = p_phone_number
+    WHERE id_person = p_id_client;
+
+END //
+
 DELIMITER ;
 
 
