@@ -175,18 +175,6 @@ BEGIN
     VALUES (p_sale_id, p_product_id, p_quantity);
 END //
 
-CREATE PROCEDURE update_admin(
-    IN p_id_admin INT,
-    IN p_name VARCHAR(45),
-    IN p_email VARCHAR(45),
-    IN p_senha VARCHAR(45)
-)
-BEGIN
-    -- Update User
-    UPDATE User
-    SET name = p_name, email = p_email, senha = p_senha
-    WHERE id_user = p_id_admin;
-END //
 
 CREATE PROCEDURE update_client(
     IN p_id_client INT,
