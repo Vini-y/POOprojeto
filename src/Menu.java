@@ -119,10 +119,10 @@ public class Menu {
                         inserirCliente();
                         break;
                     case "Cadastrar Fornecedor":
-                        // implementar inserirFornecedor()
+                        inserirFornecedor();
                         break;
                     case "Cadastrar Produto":
-                        // implementar inserirProduto()
+                        // inserirProduto()
                         break;
                     case "Listar Vendedor":
                         // implementar listarVendedor()
@@ -137,16 +137,16 @@ public class Menu {
                         // implementar listarProduto()
                         break;
                     case "Editar Vendedor":
-                        // implementar editarVendedor()
+                        editarVendedor();
                         break;
                     case "Editar Cliente":
-                        // implementar editarCliente()
+                        editarCliente();
                         break;
                     case "Editar Fornecedor":
-                        // implementar editarFornecedor()
+                        editarFornecedor();
                         break;
                     case "Editar Produto":
-                        // implementar editarProduto()
+                        editarProduto();
                         break;
                     case "Deletar Vendedor":
                         // implementar deletarVendedor()
@@ -299,11 +299,229 @@ public class Menu {
 
             sellerDAO.insertSeller(name, email, senha, lastName, cpf, birthDate, phoneNumber, registrationDate, city, state, country, address, addressNumber);
 
-            System.out.println("Vendedor inserido com sucesso!");
+            System.out.println("Admin inserido com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
 
+    private void inserirFornecedor() {
+        try {
+            System.out.print("Nome: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Email: ");
+            String email = scanner.nextLine();
+
+            System.out.print("Senha: ");
+            String senha = scanner.nextLine();
+
+            System.out.print("CNPJ: ");
+            String cnpj = scanner.nextLine();
+
+            System.out.print("Cidade: ");
+            String city = scanner.nextLine();
+
+            System.out.print("Estado: ");
+            String state = scanner.nextLine();
+
+            System.out.print("País: ");
+            String country = scanner.nextLine();
+
+            System.out.print("Endereço: ");
+            String address = scanner.nextLine();
+
+            System.out.print("Número do endereço: ");
+            String addressNumber = scanner.nextLine();
+
+            supplierDAO.insertSupplier(name, email, senha, cnpj, city, state, country, address, addressNumber);
+
+            System.out.println("Fornecedor inserido com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao cadastrar o fornecedor: " + e.getMessage());
+        }
+    }
+
+    private void editarCliente() {
+
+        try {
+            System.out.print("Diga o id do cliente que você quer alterar: ");
+            int id_selecionado = scanner.nextInt();
+
+            scanner.nextLine();
+
+            System.out.print("Novo Nome: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Novo Email: ");
+            String email = scanner.nextLine();
+
+            System.out.print("Nova Senha: ");
+            String senha = scanner.nextLine();
+
+            System.out.print("Novo Sobrenome: ");
+            String lastName = scanner.nextLine();
+
+            System.out.print("Novo CPF: ");
+            String cpf = scanner.nextLine();
+
+            System.out.print("Nova Data de nascimento (YYYY-MM-DD): ");
+            Date birthDate = Date.valueOf(scanner.nextLine());
+
+            System.out.print("Novo Número de telefone: ");
+            String phoneNumber = scanner.nextLine();
+
+            System.out.print("Nova Cidade: ");
+            String city = scanner.nextLine();
+
+            System.out.print("Novo Estado: ");
+            String state = scanner.nextLine();
+
+            System.out.print("Novo País: ");
+            String country = scanner.nextLine();
+
+            System.out.print("Novo Endereço: ");
+            String address = scanner.nextLine();
+
+            System.out.print("Novo Número do endereço: ");
+            String addressNumber = scanner.nextLine();
+
+            clientDAO.updateClient(id_selecionado, name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+
+            System.out.println("Cliente editado com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao editar cliente: " + e.getMessage());
+        }
+
+    }
+
+    private void editarVendedor() {
+
+        try {
+            System.out.print("Diga o id do vendedor que você quer alterar: ");
+            int id_selecionado = scanner.nextInt();
+
+            scanner.nextLine();
+
+            System.out.print("Novo Nome: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Novo Email: ");
+            String email = scanner.nextLine();
+
+            System.out.print("Nova Senha: ");
+            String senha = scanner.nextLine();
+
+            System.out.print("Novo Sobrenome: ");
+            String lastName = scanner.nextLine();
+
+            System.out.print("Novo CPF: ");
+            String cpf = scanner.nextLine();
+
+            System.out.print("Nova Data de nascimento (YYYY-MM-DD): ");
+            Date birthDate = Date.valueOf(scanner.nextLine());
+
+            System.out.print("Novo Número de telefone: ");
+            String phoneNumber = scanner.nextLine();
+
+            System.out.print("Nova Cidade: ");
+            String city = scanner.nextLine();
+
+            System.out.print("Novo Estado: ");
+            String state = scanner.nextLine();
+
+            System.out.print("Novo País: ");
+            String country = scanner.nextLine();
+
+            System.out.print("Novo Endereço: ");
+            String address = scanner.nextLine();
+
+            System.out.print("Novo Número do endereço: ");
+            String addressNumber = scanner.nextLine();
+
+            sellerDAO.updateSeller(id_selecionado, name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+
+            System.out.println("Vendedor editado com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao editar vendedor: " + e.getMessage());
+        }
+
+    }
+    private void editarFornecedor() {
+
+        try {
+            System.out.print("Diga o id do fornecedor que você quer alterar: ");
+            int id_selecionado = scanner.nextInt();
+
+            scanner.nextLine();
+
+            System.out.print("Novo Nome: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Novo Email: ");
+            String email = scanner.nextLine();
+
+            System.out.print("Nova Senha: ");
+            String senha = scanner.nextLine();
+
+            System.out.print("Novo CNPJ: ");
+            String cnpj = scanner.nextLine();
+
+            System.out.print("Nova Cidade: ");
+            String city = scanner.nextLine();
+
+            System.out.print("Novo Estado: ");
+            String state = scanner.nextLine();
+
+            System.out.print("Novo País: ");
+            String country = scanner.nextLine();
+
+            System.out.print("Novo Endereço: ");
+            String address = scanner.nextLine();
+
+            System.out.print("Novo Número do endereço: ");
+            String addressNumber = scanner.nextLine();
+
+            supplierDAO.updateSupplier(id_selecionado, name, email, senha, cnpj, city, state, country, address, addressNumber);
+
+            System.out.println("Fornecedor editado com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao editar fornecedor: " + e.getMessage());
+        }
+
+    }
+    private void editarProduto() {
+
+        try {
+            System.out.print("Diga o id do produto que você quer alterar: ");
+            int id_selecionado = scanner.nextInt();
+
+            scanner.nextLine();
+
+            System.out.print("Nova Descrição: ");
+            String description= scanner.nextLine();
+
+            System.out.print("Nova Quantidade: ");
+            int quantity = scanner.nextInt();
+
+            System.out.print("Novo Preço: ");
+            float price = scanner.nextFloat();
+
+            System.out.print("Novo id de Fornecedor: ");
+            int id_supplier = scanner.nextInt();
+
+            productDAO.updateProduct(id_selecionado, description, quantity, price, id_supplier);
+
+            System.out.println("Produto editado com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao editar produto: " + e.getMessage());
+        }
+
+    }
 }

@@ -5,7 +5,13 @@ DROP PROCEDURE IF EXISTS insert_supplier;
 DROP PROCEDURE IF EXISTS insert_product;
 DROP PROCEDURE IF EXISTS insert_sale;
 DROP PROCEDURE IF EXISTS insert_sale_item;
-
+DROP PROCEDURE IF EXISTS update_admin;
+DROP PROCEDURE IF EXISTS update_client;
+DROP PROCEDURE IF EXISTS update_seller;
+DROP PROCEDURE IF EXISTS update_supplier;
+DROP PROCEDURE IF EXISTS update_product;
+DROP PROCEDURE IF EXISTS update_sale;
+DROP PROCEDURE IF EXISTS update_sale_item;
 
 DELIMITER //
 
@@ -73,7 +79,6 @@ CREATE PROCEDURE insert_seller(
     IN p_cpf VARCHAR(45),
     IN p_birth_date DATE,
     IN p_phone_number VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -95,8 +100,8 @@ BEGIN
     SET address_id = LAST_INSERT_ID();
 
     -- Insert into Person
-    INSERT INTO Person (id_person, last_name, cpf, birth_date, phone_number, registration_date, address_id)
-    VALUES (user_id, p_last_name, p_cpf, p_birth_date, p_phone_number, p_registration_date, address_id);
+    INSERT INTO Person (id_person, last_name, cpf, birth_date, phone_number, address_id)
+    VALUES (user_id, p_last_name, p_cpf, p_birth_date, p_phone_number, address_id);
 
     -- Insert into Seller
     INSERT INTO Seller (id_seller)
@@ -108,7 +113,6 @@ CREATE PROCEDURE insert_supplier(
     IN p_email VARCHAR(45),
     IN p_senha VARCHAR(45),
     IN p_cnpj VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -130,8 +134,8 @@ BEGIN
     SET address_id = LAST_INSERT_ID();
 
     -- Insert into Supplier
-    INSERT INTO Supplier (id_supplier, `name`, cnpj, registration_date, address_id)
-    VALUES (user_id, p_name, p_cnpj, p_registration_date, address_id);
+    INSERT INTO Supplier (id_supplier, `name`, cnpj, address_id)
+    VALUES (user_id, p_name, p_cnpj, address_id);
 END //
 
 -- Procedure para inserir produtos na tabela Product
@@ -171,20 +175,6 @@ BEGIN
     VALUES (p_sale_id, p_product_id, p_quantity);
 END //
 
-DELIMITER ;
-
-
-
-DROP PROCEDURE IF EXISTS update_admin;
-DROP PROCEDURE IF EXISTS update_client;
-DROP PROCEDURE IF EXISTS update_seller;
-DROP PROCEDURE IF EXISTS update_supplier;
-DROP PROCEDURE IF EXISTS update_product;
-DROP PROCEDURE IF EXISTS update_sale;
-DROP PROCEDURE IF EXISTS update_sale_item;
-
-DELIMITER //
-
 CREATE PROCEDURE update_admin(
     IN p_id_admin INT,
     IN p_name VARCHAR(45),
@@ -195,7 +185,7 @@ BEGIN
     -- Update User
     UPDATE User
     SET name = p_name, email = p_email, senha = p_senha
-    WHERE id = p_id_admin;
+    WHERE id_user = p_id_admin;
 END //
 
 CREATE PROCEDURE update_client(
@@ -207,7 +197,6 @@ CREATE PROCEDURE update_client(
     IN p_cpf VARCHAR(45),
     IN p_birth_date DATE,
     IN p_phone_number VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -220,7 +209,7 @@ BEGIN
     -- Update User
     UPDATE User
     SET name = p_name, email = p_email, senha = p_senha
-    WHERE id = p_id_client;
+    WHERE id_user = p_id_client;
 
     -- Get Address ID
     SELECT address_id INTO address_id
@@ -230,12 +219,13 @@ BEGIN
     -- Update Address
     UPDATE Address
     SET city = p_city, state = p_state, country = p_country, address = p_address, address_number = p_address_number
-    WHERE id = address_id;
+    WHERE id_address = address_id;
 
     -- Update Person
     UPDATE Person
-    SET last_name = p_last_name, cpf = p_cpf, birth_date = p_birth_date, phone_number = p_phone_number, registration_date = p_registration_date
+    SET last_name = p_last_name, cpf = p_cpf, birth_date = p_birth_date, phone_number = p_phone_number
     WHERE id_person = p_id_client;
+
 END //
 
 CREATE PROCEDURE update_seller(
@@ -247,7 +237,6 @@ CREATE PROCEDURE update_seller(
     IN p_cpf VARCHAR(45),
     IN p_birth_date DATE,
     IN p_phone_number VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -260,7 +249,7 @@ BEGIN
     -- Update User
     UPDATE User
     SET name = p_name, email = p_email, senha = p_senha
-    WHERE id = p_id_seller;
+    WHERE id_user = p_id_seller;
 
     -- Get Address ID
     SELECT address_id INTO address_id
@@ -270,11 +259,11 @@ BEGIN
     -- Update Address
     UPDATE Address
     SET city = p_city, state = p_state, country = p_country, address = p_address, address_number = p_address_number
-    WHERE id = address_id;
+    WHERE id_address = address_id;
 
     -- Update Person
     UPDATE Person
-    SET last_name = p_last_name, cpf = p_cpf, birth_date = p_birth_date, phone_number = p_phone_number, registration_date = p_registration_date
+    SET last_name = p_last_name, cpf = p_cpf, birth_date = p_birth_date, phone_number = p_phone_number
     WHERE id_person = p_id_seller;
 END //
 
@@ -284,7 +273,6 @@ CREATE PROCEDURE update_supplier(
     IN p_email VARCHAR(45),
     IN p_senha VARCHAR(45),
     IN p_cnpj VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -297,7 +285,7 @@ BEGIN
     -- Update User
     UPDATE User
     SET name = p_name, email = p_email, senha = p_senha
-    WHERE id = p_id_supplier;
+    WHERE id_user = p_id_supplier;
 
     -- Get Address ID
     SELECT address_id INTO address_id
@@ -307,11 +295,11 @@ BEGIN
     -- Update Address
     UPDATE Address
     SET city = p_city, state = p_state, country = p_country, address = p_address, address_number = p_address_number
-    WHERE id = address_id;
+    WHERE id_address = address_id;
 
     -- Update Supplier
     UPDATE Supplier
-    SET name = p_name, cnpj = p_cnpj, registration_date = p_registration_date
+    SET name = p_name, cnpj = p_cnpj
     WHERE id_supplier = p_id_supplier;
 END //
 
@@ -355,4 +343,9 @@ BEGIN
     WHERE id_sale_item = p_sale_item_id;
 END //
 
+
+
 DELIMITER ;
+
+
+
