@@ -39,6 +39,7 @@ public class ProductDAO {
             } else {
                 System.out.println("Erro ao conectar ao banco de dados.");
             }
+
         }
     }
 }

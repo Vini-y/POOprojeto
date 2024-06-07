@@ -15,6 +15,7 @@ public class Menu {
     private SupplierDAO supplierDAO;
     private ProductDAO productDAO;
     private String clienteTipo;
+    private SaleDAO saleDAO;
 
     public Menu(String clienteTipo) {
         scanner = new Scanner(System.in);
@@ -23,6 +24,7 @@ public class Menu {
         sellerDAO = new SellerDAO();
         supplierDAO = new SupplierDAO();
         productDAO = new ProductDAO();
+        saleDAO = new SaleDAO();
 
         this.clienteTipo = clienteTipo;
     }
@@ -128,13 +130,13 @@ public class Menu {
                         // implementar listarVendedor()
                         break;
                     case "Listar Cliente":
-                        // implementar listarCliente()
+                        SelectDAO.listar("client");
                         break;
                     case "Listar Fornecedor":
-                        // implementar listarFornecedor()
+                        SelectDAO.listar("supplier");
                         break;
                     case "Listar Produto":
-                        // implementar listarProduto()
+                        SelectDAO.listar("product");
                         break;
                     case "Editar Vendedor":
                         editarVendedor();
@@ -164,7 +166,11 @@ public class Menu {
                         // implementar registrarVenda()
                         break;
                     case "Listar Vendas":
-                        // implementar listarVendas()
+                        SelectDAO.listar("sale");
+                        System.out.print("\nSelecione a ID da venda para mais informações: ");
+                        Scanner s = new Scanner(System.in);
+                        int id = s.nextInt();
+                        saleDAO.getSale_Itens(id);
                         break;
                     case "Fechamento do Dia":
                         // implementar fechamentoDoDia()
