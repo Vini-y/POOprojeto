@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            DatabaseConnection.connect();
+            DatabaseConnection.getConnection();
 
             String user = login();
             Menu menu = new Menu(user);

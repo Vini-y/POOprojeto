@@ -55,42 +55,50 @@ public class SupplierDAO {
 
     }
     public static void selectSupplier() {
-        System.out.println("Entrou");
-        String query = "SELECT s.id_supplier, u.name, s.cnpj, s.registration_date, a.city, a.state, a.country, a.address, a.address_number, u.email " +
+        String sql = "SELECT s.id_supplier, s.name, s.cnpj, s.registration_date, " +
+                "a.city, a.state, a.country, a.address, a.address_number " +
                 "FROM Supplier s " +
-                "JOIN Person p ON s.id_supplier = p.id_person " +
-                "JOIN Address a ON p.address_id = a.id_address " +
-                "JOIN User u ON p.id_person = u.id_user";
+                "INNER JOIN Address a ON s.address_id = a.id_address";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            DatabaseConnection.connect();
 
             while (rs.next()) {
-                int idFornecedor = rs.getInt("id_supplier");
-                String nome = rs.getString("name");
-                String cnpj = rs.getString("cnpj");
-                String dataCadastro = rs.getString("registration_date");
-                String cidade = rs.getString("city");
-                String estado = rs.getString("state");
-                String pais = rs.getString("country");
-                String endereco = rs.getString("address");
-                String numeroEndereco = rs.getString("address_number");
-                String email = rs.getString("email");
-
-                System.out.println("ID: " + idFornecedor);
-                System.out.println("Nome: " + nome);
-                System.out.println("CNPJ: " + cnpj);
-                System.out.println("Data de Cadastro: " + dataCadastro);
-                System.out.println("Endereço: " + endereco + ", " + numeroEndereco + ", " + cidade + ", " + estado + ", " + pais);
-                System.out.println("Email: " + email);
-                System.out.println("----------------------------------");
+                System.out.println("ID do Fornecedor: " + rs.getInt("id_supplier"));
+                System.out.println("Nome: " + rs.getString("name"));
+                System.out.println("CNPJ: " + rs.getString("cnpj"));
+                System.out.println("Data de Registro: " + rs.getDate("registration_date"));
+                System.out.println("Cidade: " + rs.getString("city"));
+                System.out.println("Estado: " + rs.getString("state"));
+                System.out.println("País: " + rs.getString("country"));
+                System.out.println("Endereço: " + rs.getString("address"));
+                System.out.println("Número do Endereço: " + rs.getString("address_number"));
+                System.out.println("---------------------------");
             }
+
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Erro ao listar fornecedores: " + e.getMessage());
         }
     }
+
+        public static void deleteSupplier(int supplierId) {
+            String sql = "{CALL delete_supplier(?)}";
+
+            try (Connection conn = DatabaseConnection.getConnection();
+                 CallableStatement stmt = conn.prepareCall(sql)) {
+
+                stmt.setInt(1, supplierId);
+                stmt.execute();
+
+                System.out.println("Fornecedor deletado com sucesso!");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
 
 }
 

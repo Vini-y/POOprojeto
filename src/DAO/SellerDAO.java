@@ -77,7 +77,7 @@ public class SellerDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
-            DatabaseConnection.connect();
+
             while (rs.next()) {
                 int idVendedor = rs.getInt("id_seller");
                 String nome = rs.getString("name");
@@ -103,6 +103,21 @@ public class SellerDAO {
             }
         } catch (SQLException e) {
             System.out.println("Erro ao listar vendedores: " + e.getMessage());
+        }
+    }
+
+    public static void removeSeller(int sellerId) throws SQLException {
+        String sql = "{CALL delete_seller(?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, sellerId);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 

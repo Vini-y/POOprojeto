@@ -52,4 +52,48 @@ public class SaleDAO {
     }
 
 
+    public static void listarVendas() {
+        String sql = "SELECT s.id_sale, uc.name AS client_name, us.name AS seller_name, s.sale_date, p.tipo AS payment_type, " +
+                "s.total_value AS sale_total, s.parcelas, pr.description AS product_description, " +
+                "si.quantity, si.total_value AS item_total " +
+                "FROM Sale s " +
+                "INNER JOIN User uc ON s.id_client = uc.id_user " +
+                "INNER JOIN User us ON s.id_seller = us.id_user " +
+                "INNER JOIN Sale_itens si ON s.id_sale = si.sale_id " +
+                "INNER JOIN Product pr ON si.product_id = pr.id_product " +
+                "INNER JOIN Pay p ON s.payment = p.id_Pay"; // Join com a tabela Pay para obter o tipo de pagamento
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            int currentSaleId = 0;
+            while (rs.next()) {
+                int saleId = rs.getInt("id_sale");
+                if (saleId != currentSaleId) {
+                    // Nova venda
+                    System.out.println("Venda ID: " + saleId);
+                    System.out.println("Cliente: " + rs.getString("client_name"));
+                    System.out.println("Vendedor: " + rs.getString("seller_name"));
+                    System.out.println("Data da Venda: " + rs.getString("sale_date"));
+                    System.out.println("Método de Pagamento: " + rs.getString("payment_type"));
+                    System.out.println("Valor Total da Venda: " + rs.getFloat("sale_total"));
+                    System.out.println("Parcelas: " + rs.getInt("parcelas"));
+                    currentSaleId = saleId;
+                }
+
+                // Item de venda
+                System.out.println("  Descrição do Produto: " + rs.getString("product_description"));
+                System.out.println("  Quantidade: " + rs.getInt("quantity"));
+                System.out.println("  Valor Total do Item: " + rs.getFloat("item_total"));
+                System.out.println("--------------------------");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
+

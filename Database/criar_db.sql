@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `Sale_itens` (
   `sale_id` INT NOT NULL,
   `product_id` INT NOT NULL,
   `quantity` INT NOT NULL,
+  `total_value` FLOAT NOT NULL, -- Nova coluna adicionada
   PRIMARY KEY (`id_sale_itens`),
   INDEX `id_sale_idx` (`sale_id` ASC) VISIBLE,
   INDEX `id_product_idx` (`product_id` ASC) VISIBLE,
@@ -132,3 +133,4 @@ CREATE TABLE IF NOT EXISTS `Sale_itens` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
+

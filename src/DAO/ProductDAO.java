@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class ProductDAO {
 
-    public void insertProduct(String description, int quantity, float price, int idSupplier) throws SQLException {
+    public void insertProduct(String description, int quantity, float price, int idSupplier) {
         String sql = "{CALL insert_product(?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -17,9 +17,15 @@ public class ProductDAO {
             stmt.setFloat(3, price);
             stmt.setInt(4, idSupplier);
 
-            stmt.executeUpdate();
+            stmt.execute();
+
+            System.out.println("Produto inserido com sucesso!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
 
     public void updateProduct(int id_product, String description, int quantity, float price, int idSupplier) throws SQLException {
         String sql = "{CALL update_product(?, ?, ?, ?, ?)}";
@@ -50,7 +56,7 @@ public class ProductDAO {
                  PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
-                DatabaseConnection.connect();
+                DatabaseConnection.getConnection();
 
                 while (rs.next()) {
                     int idProduto = rs.getInt("id_product");
@@ -70,6 +76,23 @@ public class ProductDAO {
             } catch (SQLException e) {
                 System.out.println("Erro ao listar produtos: " + e.getMessage());
             }
+        }
+
+        public void deleteProduct(int productId) {
+            String sql = "{CALL delete_product(?)}";
+
+            try (Connection conn = DatabaseConnection.getConnection();
+                 CallableStatement stmt = conn.prepareCall(sql)) {
+
+                stmt.setInt(1, productId);
+                stmt.execute();
+
+                System.out.println("Produto deletado com sucesso!");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

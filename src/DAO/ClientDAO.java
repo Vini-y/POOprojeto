@@ -81,7 +81,7 @@ public class ClientDAO {
                  PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
-                DatabaseConnection.connect();
+                DatabaseConnection.getConnection();
 
                 while (rs.next()) {
                     int idCliente = rs.getInt("id_client");
@@ -111,6 +111,25 @@ public class ClientDAO {
                 System.out.println("Erro ao listar clientes: " + e.getMessage());
             }
         }
+
+
+
+    public static void deleteClient(int clientId) {
+        String sql = "{CALL delete_client(?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, clientId);
+            stmt.execute();
+
+            System.out.println("Cliente deletado com sucesso!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     }
 

@@ -12,6 +12,10 @@ DROP PROCEDURE IF EXISTS update_supplier;
 DROP PROCEDURE IF EXISTS update_product;
 DROP PROCEDURE IF EXISTS update_sale;
 DROP PROCEDURE IF EXISTS update_sale_item;
+DROP PROCEDURE IF EXISTS delete_seller;
+DROP PROCEDURE IF EXISTS delete_client;
+DROP PROCEDURE IF EXISTS delete_supplier;
+DROP PROCEDURE IF EXISTS delete_product;
 
 DELIMITER //
 
@@ -331,6 +335,60 @@ BEGIN
     WHERE id_sale_item = p_sale_item_id;
 END //
 
+
+CREATE PROCEDURE delete_seller(IN seller_id INT)
+
+BEGIN
+    -- Deletando o vendedor
+    DELETE FROM Seller WHERE id_seller = sellerId;
+
+    -- Deletando o usuário associado ao vendedor
+    DELETE FROM User WHERE id_user = sellerId;
+
+    -- Deletando a pessoa associada ao vendedor
+    DELETE FROM Person WHERE id_person = sellerId;
+
+    -- Deletando o endereço associado ao vendedor
+    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Person WHERE id_person = sellerId);
+END //
+
+CREATE PROCEDURE delete_client(IN clientId INT)
+
+BEGIN
+    -- Deletando o cliente
+    DELETE FROM Client WHERE id_client = clientId;
+
+    -- Deletando o usuário associado ao cliente
+    DELETE FROM User WHERE id_user = clientId;
+
+    -- Deletando a pessoa associada ao cliente
+    DELETE FROM Person WHERE id_person = clientId;
+
+    -- Deletando o endereço associado ao cliente
+    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Person WHERE id_person = clientId);
+END //
+
+
+CREATE PROCEDURE delete_supplier(IN supplierId INT)
+BEGIN
+    -- Deletando os produtos do fornecedor
+    DELETE FROM Product WHERE id_supplier = supplierId;
+
+    -- Deletando o fornecedor
+    DELETE FROM Supplier WHERE id_supplier = supplierId;
+
+    -- Deletando o usuário associado ao fornecedor
+    DELETE FROM User WHERE id_user = supplierId;
+
+    -- Deletando o endereço associado ao fornecedor
+    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Supplier WHERE id_supplier = supplierId);
+END //
+
+
+CREATE PROCEDURE delete_product(IN productId INT)
+BEGIN
+    DELETE FROM Product WHERE id_product = productId;
+END //
 
 
 DELIMITER ;

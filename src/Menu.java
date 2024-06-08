@@ -87,7 +87,7 @@ public class Menu {
 
     public void exibirMenu() {
         try {
-            DatabaseConnection.connect();
+            DatabaseConnection.getConnection();
 
             ArrayList<String> opcoes = filtrarOpcoes();
             int option = -1;
@@ -123,7 +123,7 @@ public class Menu {
                         inserirFornecedor();
                         break;
                     case "Cadastrar Produto":
-                        // inserirProduto()
+                        inserirProduto();
                         break;
                     case "Listar Vendedor":
                         SellerDAO.selectSeller();
@@ -150,29 +150,39 @@ public class Menu {
                         editarProduto();
                         break;
                     case "Deletar Vendedor":
-                        // implementar deletarVendedor()
+                        SellerDAO.selectSeller();
+                        System.out.println("Selecione o ID do Vendedor para deletar: ");
+                        int idSeller = scanner.nextInt();
+                        scanner.nextLine();
+                        SellerDAO.removeSeller(idSeller);
                         break;
                     case "Deletar Cliente":
-                        // implementar deletarCliente()
+                        ClientDAO.selectClient();
+                        System.out.println("Selecione o ID do Cliente para deletar: ");
+                        int idClient = scanner.nextInt();
+                        scanner.nextLine();
+                        ClientDAO.deleteClient(idClient);
                         break;
                     case "Deletar Fornecedor":
-                        // implementar deletarFornecedor()
+                        SupplierDAO.selectSupplier();
+                        System.out.println("Selecione o ID do Fornecedor para deletar: ");
+                        int idSupplier = scanner.nextInt();
+                        scanner.nextLine();
+                        SupplierDAO.deleteSupplier(idSupplier);
                         break;
                     case "Deletar Produto":
-                        // implementar deletarProduto()
+                        ProductDAO.selectProduct();
+                        System.out.println("Selecione o ID do Produto para deletar: ");
+                        int idProduct = scanner.nextInt();
+                        scanner.nextLine();
+                        SupplierDAO.deleteSupplier(idProduct);
                         break;
                     case "Registrar Venda":
                         // implementar registrarVenda()
                         break;
                     case "Listar Vendas":
-                        //SaleDAO.select();
-
-                        System.out.print("\nSelecione a ID da venda para mais informações: ");
-                        Scanner s = new Scanner(System.in);
-                        int id_sale = s.nextInt();
-                        SaleDAO.getSale_Itens(id_sale);
+                        SaleDAO.listarVendas();
                         break;
-
                     case "Fechamento do Dia":
                         // implementar fechamentoDoDia()
                         break;
@@ -348,6 +358,29 @@ public class Menu {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao cadastrar o fornecedor: " + e.getMessage());
+        }
+    }
+
+    private void inserirProduto() {
+        try {
+            System.out.print("Descrição: ");
+            String description = scanner.nextLine();
+
+            System.out.print("Quantidade: ");
+            int quantity = Integer.parseInt(scanner.nextLine());
+
+            System.out.print("Preço: ");
+            float price = Float.parseFloat(scanner.nextLine());
+
+            System.out.print("ID do fornecedor: ");
+            int idSupplier = Integer.parseInt(scanner.nextLine());
+
+            productDAO.insertProduct(description, quantity, price, idSupplier);
+
+            System.out.println("Produto inserido com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro ao inserir produto: " + e.getMessage());
         }
     }
 
