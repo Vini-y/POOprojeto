@@ -9,7 +9,7 @@ public class DatabaseConnection {
 
     public static void connect() throws SQLException {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/thorffin_wears", "root", "pepsiSQL@123");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/thorffin_wears", "root", "PUC@1234");
             if (connection != null) {
                 System.out.println("Conexão ao banco de dados estabelecida com sucesso.");
             }

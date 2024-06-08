@@ -1,9 +1,7 @@
 package DAO;
 
-import java.sql.Connection;
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.SQLException;
+import java.sql.*;
+
 import Utils.DatabaseConnection;
 
 public class SupplierDAO {
@@ -55,6 +53,44 @@ public class SupplierDAO {
         }
 
 
+    }
+    public static void selectSupplier() {
+        System.out.println("Entrou");
+        String query = "SELECT s.id_supplier, u.name, s.cnpj, s.registration_date, a.city, a.state, a.country, a.address, a.address_number, u.email " +
+                "FROM Supplier s " +
+                "JOIN Person p ON s.id_supplier = p.id_person " +
+                "JOIN Address a ON p.address_id = a.id_address " +
+                "JOIN User u ON p.id_person = u.id_user";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            System.out.println("tentei");
+
+            while (rs.next()) {
+                System.out.println("entrei no while");
+                int idFornecedor = rs.getInt("id_supplier");
+                String nome = rs.getString("name");
+                String cnpj = rs.getString("cnpj");
+                String dataCadastro = rs.getString("registration_date");
+                String cidade = rs.getString("city");
+                String estado = rs.getString("state");
+                String pais = rs.getString("country");
+                String endereco = rs.getString("address");
+                String numeroEndereco = rs.getString("address_number");
+                String email = rs.getString("email");
+
+                System.out.println("ID: " + idFornecedor);
+                System.out.println("Nome: " + nome);
+                System.out.println("CNPJ: " + cnpj);
+                System.out.println("Data de Cadastro: " + dataCadastro);
+                System.out.println("Endereço: " + endereco + ", " + numeroEndereco + ", " + cidade + ", " + estado + ", " + pais);
+                System.out.println("Email: " + email);
+                System.out.println("----------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar fornecedores: " + e.getMessage());
+        }
     }
 
 }

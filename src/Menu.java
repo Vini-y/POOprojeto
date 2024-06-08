@@ -15,7 +15,7 @@ public class Menu {
     private SupplierDAO supplierDAO;
     private ProductDAO productDAO;
     private String clienteTipo;
-    private SaleDAO saleDAO;
+
 
     public Menu(String clienteTipo) {
         scanner = new Scanner(System.in);
@@ -24,7 +24,6 @@ public class Menu {
         sellerDAO = new SellerDAO();
         supplierDAO = new SupplierDAO();
         productDAO = new ProductDAO();
-        saleDAO = new SaleDAO();
 
         this.clienteTipo = clienteTipo;
     }
@@ -127,16 +126,16 @@ public class Menu {
                         // inserirProduto()
                         break;
                     case "Listar Vendedor":
-                        // implementar listarVendedor()
+                        SellerDAO.selectSeller();
                         break;
                     case "Listar Cliente":
-                        SelectDAO.listar("client");
+                        ClientDAO.selectClient();
                         break;
                     case "Listar Fornecedor":
-                        SelectDAO.listar("supplier");
+                        SupplierDAO.selectSupplier();
                         break;
                     case "Listar Produto":
-                        SelectDAO.listar("product");
+                        ProductDAO.selectProduct();
                         break;
                     case "Editar Vendedor":
                         editarVendedor();
@@ -166,12 +165,14 @@ public class Menu {
                         // implementar registrarVenda()
                         break;
                     case "Listar Vendas":
-                        SelectDAO.listar("sale");
+                        //SaleDAO.select();
+
                         System.out.print("\nSelecione a ID da venda para mais informações: ");
                         Scanner s = new Scanner(System.in);
-                        int id = s.nextInt();
-                        saleDAO.getSale_Itens(id);
+                        int id_sale = s.nextInt();
+                        SaleDAO.getSale_Itens(id_sale);
                         break;
+
                     case "Fechamento do Dia":
                         // implementar fechamentoDoDia()
                         break;

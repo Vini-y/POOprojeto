@@ -1,9 +1,7 @@
 package DAO;
 
-import java.sql.Connection;
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.SQLException;
+import java.sql.*;
+
 import Utils.DatabaseConnection;
 
 public class SellerDAO {
@@ -68,4 +66,44 @@ public class SellerDAO {
 
         }
     }
+
+    public static void selectSeller() {
+        String query = "SELECT s.id_seller, u.name, p.last_name, p.cpf, p.birth_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number, u.email " +
+                "FROM Seller s " +
+                "JOIN Person p ON s.id_seller = p.id_person " +
+                "JOIN Address a ON p.address_id = a.id_address " +
+                "JOIN User u ON p.id_person = u.id_user";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int idVendedor = rs.getInt("id_seller");
+                String nome = rs.getString("name");
+                String sobrenome = rs.getString("last_name");
+                String cpf = rs.getString("cpf");
+                String dataNascimento = rs.getString("birth_date");
+                String telefone = rs.getString("phone_number");
+                String cidade = rs.getString("city");
+                String estado = rs.getString("state");
+                String pais = rs.getString("country");
+                String endereco = rs.getString("address");
+                String numeroEndereco = rs.getString("address_number");
+                String email = rs.getString("email");
+
+                System.out.println("ID do Vendedor: " + idVendedor);
+                System.out.println("Nome: " + nome + " " + sobrenome);
+                System.out.println("CPF: " + cpf);
+                System.out.println("Data de Nascimento: " + dataNascimento);
+                System.out.println("Telefone: " + telefone);
+                System.out.println("Endereço: " + endereco + ", " + numeroEndereco + ", " + cidade + ", " + estado + ", " + pais);
+                System.out.println("Email: " + email);
+                System.out.println("----------------------------------");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar vendedores: " + e.getMessage());
+        }
+    }
+
 }

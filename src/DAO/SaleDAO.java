@@ -23,12 +23,12 @@ public class SaleDAO {
         }
     }
 
-    public void getSale_Itens(int saleId) {
-        String query = "SELECT s.id_sale, s.id_client, s.id_seller, s.sale_date, s.payment, s.total_value, s.parcelas, "
-                + "si.id_sale_itens, si.product_id, si.quantity "
-                + "FROM Sale s "
-                + "JOIN Sale_itens si ON s.id_sale = si.sale_id "
-                + "WHERE s.id_sale = ?";
+    public static void getSale_Itens(int saleId) {
+        String query = "SELECT si.product_id, p.description AS product_name, si.quantity " +
+                "FROM Sale s " +
+                "JOIN Sale_itens si ON s.id_sale = si.sale_id " +
+                "JOIN Product p ON si.product_id = p.id_product " +
+                "WHERE s.id_sale = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement statement = conn.prepareStatement(query)) {
@@ -36,26 +36,12 @@ public class SaleDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    int idSale = resultSet.getInt("id_sale");
-                    int idClient = resultSet.getInt("id_client");
-                    int idSeller = resultSet.getInt("id_seller");
-                    Timestamp saleDate = resultSet.getTimestamp("sale_date");
-                    int payment = resultSet.getInt("payment");
-                    float totalValue = resultSet.getFloat("total_value");
-                    int parcelas = resultSet.getInt("parcelas");
-                    int idSaleItens = resultSet.getInt("id_sale_itens");
                     int productId = resultSet.getInt("product_id");
+                    String productName = resultSet.getString("product_name");
                     int quantity = resultSet.getInt("quantity");
 
-                    System.out.println("Sale ID: " + idSale);
-                    System.out.println("Client ID: " + idClient);
-                    System.out.println("Seller ID: " + idSeller);
-                    System.out.println("Sale Date: " + saleDate);
-                    System.out.println("Payment: " + payment);
-                    System.out.println("Total Value: " + totalValue);
-                    System.out.println("Parcelas: " + parcelas);
-                    System.out.println("Item ID: " + idSaleItens);
                     System.out.println("Product ID: " + productId);
+                    System.out.println("Product Name: " + productName);
                     System.out.println("Quantity: " + quantity);
                     System.out.println("---");
                 }
