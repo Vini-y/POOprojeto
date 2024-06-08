@@ -65,10 +65,9 @@ public class SupplierDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
-            System.out.println("tentei");
+            DatabaseConnection.connect();
 
             while (rs.next()) {
-                System.out.println("entrei no while");
                 int idFornecedor = rs.getInt("id_supplier");
                 String nome = rs.getString("name");
                 String cnpj = rs.getString("cnpj");

@@ -50,6 +50,8 @@ public class ProductDAO {
                  PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
+                DatabaseConnection.connect();
+
                 while (rs.next()) {
                     int idProduto = rs.getInt("id_product");
                     String descricao = rs.getString("description");

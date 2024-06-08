@@ -77,7 +77,7 @@ public class SellerDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
-
+            DatabaseConnection.connect();
             while (rs.next()) {
                 int idVendedor = rs.getInt("id_seller");
                 String nome = rs.getString("name");

@@ -81,6 +81,8 @@ public class ClientDAO {
                  PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
+                DatabaseConnection.connect();
+
                 while (rs.next()) {
                     int idCliente = rs.getInt("id_client");
                     String nome = rs.getString("name");
