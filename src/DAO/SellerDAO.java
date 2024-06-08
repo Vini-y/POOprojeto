@@ -7,10 +7,10 @@ import Utils.DatabaseConnection;
 public class SellerDAO {
 
     public void insertSeller(String name, String email, String senha, String lastName, String cpf,
-                             Date birthDate, String phoneNumber, Date registrationDate,
+                             Date birthDate, String phoneNumber,
                              String city, String state, String country, String address,
                              String addressNumber) throws SQLException {
-        String sql = "{CALL insert_seller(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL insert_seller(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
@@ -22,16 +22,17 @@ public class SellerDAO {
             stmt.setString(5, cpf);
             stmt.setDate(6, birthDate);
             stmt.setString(7, phoneNumber);
-            stmt.setDate(8, registrationDate);
-            stmt.setString(9, city);
-            stmt.setString(10, state);
-            stmt.setString(11, country);
-            stmt.setString(12, address);
-            stmt.setString(13, addressNumber);
+            // Removido o parâmetro de registro
+            stmt.setString(8, city);
+            stmt.setString(9, state);
+            stmt.setString(10, country);
+            stmt.setString(11, address);
+            stmt.setString(12, addressNumber);
 
             stmt.executeUpdate();
         }
     }
+
     public void updateSeller(int id_selecionado, String name, String email, String senha, String lastName, String cpf,
                              Date birthDate, String phoneNumber,
                              String city, String state, String country, String address,

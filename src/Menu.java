@@ -226,9 +226,6 @@ public class Menu {
             System.out.print("Número de telefone: ");
             String phoneNumber = scanner.nextLine();
 
-            System.out.print("Data de registro (YYYY-MM-DD): ");
-            Date registrationDate = Date.valueOf(scanner.nextLine());
-
             System.out.print("Cidade: ");
             String city = scanner.nextLine();
 
@@ -244,7 +241,7 @@ public class Menu {
             System.out.print("Número do endereço: ");
             String addressNumber = scanner.nextLine();
 
-            clientDAO.insertClient(name, email, senha, lastName, cpf, birthDate, phoneNumber, registrationDate, city, state, country, address, addressNumber);
+            clientDAO.insertClient(name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
 
             System.out.println("Cliente inserido com sucesso!");
         } catch (Exception e) {
@@ -252,6 +249,7 @@ public class Menu {
             System.out.println("Erro ao inserir cliente: " + e.getMessage());
         }
     }
+
 
     private void inserirAdmin() {
         try {
@@ -296,9 +294,6 @@ public class Menu {
             System.out.print("Número de telefone: ");
             String phoneNumber = scanner.nextLine();
 
-            System.out.print("Data de registro (YYYY-MM-DD): ");
-            Date registrationDate = Date.valueOf(scanner.nextLine());
-
             System.out.print("Cidade: ");
             String city = scanner.nextLine();
 
@@ -314,14 +309,15 @@ public class Menu {
             System.out.print("Número do endereço: ");
             String addressNumber = scanner.nextLine();
 
-            sellerDAO.insertSeller(name, email, senha, lastName, cpf, birthDate, phoneNumber, registrationDate, city, state, country, address, addressNumber);
+            sellerDAO.insertSeller(name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
 
-            System.out.println("Admin inserido com sucesso!");
+            System.out.println("Vendedor inserido com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
+
 
     private void inserirFornecedor() {
         try {
@@ -372,6 +368,7 @@ public class Menu {
             System.out.print("Preço: ");
             float price = Float.parseFloat(scanner.nextLine());
 
+            SupplierDAO.selectSupplier();
             System.out.print("ID do fornecedor: ");
             int idSupplier = Integer.parseInt(scanner.nextLine());
 
@@ -387,6 +384,7 @@ public class Menu {
     private void editarCliente() {
 
         try {
+            ClientDAO.selectClient();
             System.out.print("Diga o id do cliente que você quer alterar: ");
             int id_selecionado = scanner.nextInt();
 
@@ -441,6 +439,7 @@ public class Menu {
     private void editarVendedor() {
 
         try {
+            SellerDAO.selectSeller();
             System.out.print("Diga o id do vendedor que você quer alterar: ");
             int id_selecionado = scanner.nextInt();
 
@@ -494,6 +493,7 @@ public class Menu {
     private void editarFornecedor() {
 
         try {
+            SupplierDAO.selectSupplier();
             System.out.print("Diga o id do fornecedor que você quer alterar: ");
             int id_selecionado = scanner.nextInt();
 
@@ -538,6 +538,7 @@ public class Menu {
     private void editarProduto() {
 
         try {
+            ProductDAO.selectProduct();
             System.out.print("Diga o id do produto que você quer alterar: ");
             int id_selecionado = scanner.nextInt();
 

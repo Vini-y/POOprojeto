@@ -8,7 +8,7 @@ public class SupplierDAO {
 
     public void insertSupplier(String name, String email, String senha, String cnpj, String city, String state,
                                String country, String address, String addressNumber) throws SQLException {
-        String sql = "{CALL insert_supplier(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL insert_supplier(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {

@@ -45,7 +45,6 @@ CREATE PROCEDURE insert_client(
     IN p_cpf VARCHAR(45),
     IN p_birth_date DATE,
     IN p_phone_number VARCHAR(45),
-    IN p_registration_date DATE,
     IN p_city VARCHAR(45),
     IN p_state VARCHAR(45),
     IN p_country VARCHAR(45),
@@ -67,13 +66,13 @@ BEGIN
     SET address_id = LAST_INSERT_ID();
 
     -- Insert into Person
-    INSERT INTO Person (id_person, last_name, cpf, birth_date, phone_number, registration_date, address_id)
-    VALUES (user_id, p_last_name, p_cpf, p_birth_date, p_phone_number, p_registration_date, address_id);
+    INSERT INTO Person (id_person, last_name, cpf, birth_date, phone_number, address_id)
+    VALUES (user_id, p_last_name, p_cpf, p_birth_date, p_phone_number, address_id);
 
     -- Insert into Client
     INSERT INTO Client (id_client)
     VALUES (user_id);
-END //
+END//
 
 CREATE PROCEDURE insert_seller(
     IN p_name VARCHAR(45),
@@ -110,7 +109,8 @@ BEGIN
     -- Insert into Seller
     INSERT INTO Seller (id_seller)
     VALUES (user_id);
-END //
+END//
+
 
 CREATE PROCEDURE insert_supplier(
     IN p_name VARCHAR(45),
@@ -337,19 +337,23 @@ END //
 
 
 CREATE PROCEDURE delete_seller(IN seller_id INT)
-
 BEGIN
-    -- Deletando o vendedor
-    DELETE FROM Seller WHERE id_seller = sellerId;
+    DECLARE person_address_id INT;
 
-    -- Deletando o usuário associado ao vendedor
-    DELETE FROM User WHERE id_user = sellerId;
+    -- Obter o ID do endereço associado ao vendedor
+    SELECT address_id INTO person_address_id FROM Person WHERE id_person = seller_id;
 
     -- Deletando a pessoa associada ao vendedor
-    DELETE FROM Person WHERE id_person = sellerId;
+    DELETE FROM Person WHERE id_person = seller_id;
+
+    -- Deletando o usuário associado ao vendedor
+    DELETE FROM User WHERE id_user = seller_id;
 
     -- Deletando o endereço associado ao vendedor
-    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Person WHERE id_person = sellerId);
+    DELETE FROM Address WHERE id_address = person_address_id;
+
+    -- Deletando o vendedor
+    DELETE FROM Seller WHERE id_seller = seller_id;
 END //
 
 CREATE PROCEDURE delete_client(IN clientId INT)
