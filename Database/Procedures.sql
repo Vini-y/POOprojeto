@@ -16,6 +16,7 @@ DROP PROCEDURE IF EXISTS delete_seller;
 DROP PROCEDURE IF EXISTS delete_client;
 DROP PROCEDURE IF EXISTS delete_supplier;
 DROP PROCEDURE IF EXISTS delete_product;
+DROP PROCEDURE IF EXISTS fechamento_do_dia;
 
 DELIMITER //
 
@@ -338,38 +339,31 @@ END //
 
 CREATE PROCEDURE delete_seller(IN seller_id INT)
 BEGIN
-    DECLARE person_address_id INT;
+    -- Deletando da tabela Seller
+    DELETE FROM Seller WHERE id_seller = seller_id;
 
-    -- Obter o ID do endereço associado ao vendedor
-    SELECT address_id INTO person_address_id FROM Person WHERE id_person = seller_id;
-
-    -- Deletando a pessoa associada ao vendedor
+    -- Deletando da tabela Person
     DELETE FROM Person WHERE id_person = seller_id;
 
-    -- Deletando o usuário associado ao vendedor
+    -- Deletando da tabela User
     DELETE FROM User WHERE id_user = seller_id;
+END;
 
-    -- Deletando o endereço associado ao vendedor
-    DELETE FROM Address WHERE id_address = person_address_id;
-
-    -- Deletando o vendedor
-    DELETE FROM Seller WHERE id_seller = seller_id;
-END //
 
 CREATE PROCEDURE delete_client(IN clientId INT)
-
 BEGIN
     -- Deletando o cliente
-    DELETE FROM Client WHERE id_client = clientId;
+    DELETE FROM `Client` WHERE id_client = clientId;
+    
+    -- Deletando o endereço associado ao cliente
+    DELETE FROM Address WHERE id_address = clientId;
 
-    -- Deletando o usuário associado ao cliente
-    DELETE FROM User WHERE id_user = clientId;
-
-    -- Deletando a pessoa associada ao cliente
+	-- Deletando a pessoa associada ao cliente
     DELETE FROM Person WHERE id_person = clientId;
 
-    -- Deletando o endereço associado ao cliente
-    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Person WHERE id_person = clientId);
+    -- Deletando o usuário associado ao cliente
+    DELETE FROM `User` WHERE id_user = clientId;
+
 END //
 
 
@@ -382,17 +376,54 @@ BEGIN
     DELETE FROM Supplier WHERE id_supplier = supplierId;
 
     -- Deletando o usuário associado ao fornecedor
-    DELETE FROM User WHERE id_user = supplierId;
+    DELETE FROM `User` WHERE id_user = supplierId;
 
     -- Deletando o endereço associado ao fornecedor
-    DELETE FROM Address WHERE id_address = (SELECT address_id FROM Supplier WHERE id_supplier = supplierId);
+    DELETE FROM Address WHERE id_address =  supplierId;
 END //
+
 
 
 CREATE PROCEDURE delete_product(IN productId INT)
 BEGIN
     DELETE FROM Product WHERE id_product = productId;
 END //
+
+DELIMITER //
+
+CREATE PROCEDURE fechamento_do_dia()
+BEGIN
+    -- Variáveis para armazenar os resultados
+    DECLARE total_sales_value FLOAT DEFAULT 0;
+
+    -- Selecionar todas as vendas realizadas no dia atual
+    SELECT 
+        s.id_sale,
+        s.id_client,
+        s.id_seller,
+        s.sale_date,
+        s.payment,
+        s.total_value,
+        s.parcelas
+    FROM 
+        Sale s
+    WHERE 
+        DATE(s.sale_date) = CURDATE();
+
+    -- Calcular a soma dos valores totais das vendas do dia atual
+    SELECT 
+        SUM(s.total_value) INTO total_sales_value
+    FROM 
+        Sale s
+    WHERE 
+        DATE(s.sale_date) = CURDATE();
+
+    -- Exibir o valor total das vendas do dia atual
+    SELECT 
+        total_sales_value AS total_sales_value_of_the_day;
+END //
+
+DELIMITER ;
 
 
 DELIMITER ;

@@ -3,6 +3,8 @@ package DAO;
 import Utils.DatabaseConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SaleDAO {
 
@@ -93,6 +95,56 @@ public class SaleDAO {
         }
     }
 
+
+    public static void fechamentoDoDia() {
+        String sql = "{CALL fechamento_do_dia()}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            // Executar a procedure
+            boolean hasResults = stmt.execute();
+
+            // Obter as vendas do dia atual
+            if (hasResults) {
+                try (ResultSet rs = stmt.getResultSet()) {
+                    System.out.println("Vendas do dia atual:");
+                    while (rs.next()) {
+                        int saleId = rs.getInt("id_sale");
+                        int clientId = rs.getInt("id_client");
+                        int sellerId = rs.getInt("id_seller");
+                        String saleDate = rs.getString("sale_date");
+                        int payment = rs.getInt("payment");
+                        float totalValue = rs.getFloat("total_value");
+                        int parcelas = rs.getInt("parcelas");
+
+                        System.out.println("Venda ID: " + saleId);
+                        System.out.println("Cliente ID: " + clientId);
+                        System.out.println("Vendedor ID: " + sellerId);
+                        System.out.println("Data da Venda: " + saleDate);
+                        System.out.println("Pagamento: " + payment);
+                        System.out.println("Valor Total: " + totalValue);
+                        System.out.println("Parcelas: " + parcelas);
+                        System.out.println("---");
+                    }
+                }
+            }
+
+            // Mover para o próximo resultado que é a soma total dos valores das vendas do dia
+            if (stmt.getMoreResults()) {
+                try (ResultSet rs = stmt.getResultSet()) {
+                    if (rs.next()) {
+                        float totalSalesValueOfTheDay = rs.getFloat("total_sales_value_of_the_day");
+                        System.out.println("Valor total das vendas do dia: " + totalSalesValueOfTheDay);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao executar o fechamento do dia: " + e.getMessage());
+        }
+    }
 
 
 }

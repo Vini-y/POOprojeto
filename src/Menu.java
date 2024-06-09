@@ -1,8 +1,10 @@
 import DAO.*;
+import Models.Product;
 import Utils.DatabaseConnection;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -175,16 +177,16 @@ public class Menu {
                         System.out.println("Selecione o ID do Produto para deletar: ");
                         int idProduct = scanner.nextInt();
                         scanner.nextLine();
-                        SupplierDAO.deleteSupplier(idProduct);
+                        ProductDAO.deleteProduct(idProduct);
                         break;
                     case "Registrar Venda":
-                        // implementar registrarVenda()
+
                         break;
                     case "Listar Vendas":
                         SaleDAO.listarVendas();
                         break;
                     case "Fechamento do Dia":
-                        // implementar fechamentoDoDia()
+                        SaleDAO.fechamentoDoDia();
                         break;
                     case "Sair":
                         System.out.println("Saindo...");
@@ -490,6 +492,7 @@ public class Menu {
         }
 
     }
+
     private void editarFornecedor() {
 
         try {
@@ -535,6 +538,7 @@ public class Menu {
         }
 
     }
+
     private void editarProduto() {
 
         try {
@@ -545,7 +549,7 @@ public class Menu {
             scanner.nextLine();
 
             System.out.print("Nova Descrição: ");
-            String description= scanner.nextLine();
+            String description = scanner.nextLine();
 
             System.out.print("Nova Quantidade: ");
             int quantity = scanner.nextInt();
@@ -565,4 +569,6 @@ public class Menu {
         }
 
     }
+
+
 }

@@ -78,7 +78,7 @@ public class ProductDAO {
             }
         }
 
-        public void deleteProduct(int productId) {
+        public static void deleteProduct(int productId) {
             String sql = "{CALL delete_product(?)}";
 
             try (Connection conn = DatabaseConnection.getConnection();

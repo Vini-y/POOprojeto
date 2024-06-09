@@ -3,6 +3,7 @@ DROP TRIGGER if exists `supplier_insert_trigger`;
 DROP TRIGGER if exists `sale_insert_trigger`;
 DROP TRIGGER if exists `ItemTotalValue`;
 DROP TRIGGER if exists `SaleTotalValue`;
+DROP TRIGGER if exists ` update_product_quantity`;
 
 
 -- Trigger para inserir a data de criação automaticamente na tabela `Person`
@@ -35,7 +36,7 @@ BEGIN
     SET NEW.total_value = NEW.quantity * productPrice;
 END //
 
-CREATE TRIGGER CalculateSaleTotalValue AFTER INSERT ON Sale_itens
+CREATE TRIGGER SaleTotalValue AFTER INSERT ON Sale_itens
 FOR EACH ROW
 BEGIN
     DECLARE saleTotal FLOAT;
@@ -43,6 +44,16 @@ BEGIN
     UPDATE Sale SET total_value = saleTotal WHERE id_sale = NEW.sale_id;
 END //
 
+
+CREATE TRIGGER update_product_quantity
+AFTER INSERT ON Sale_itens
+FOR EACH ROW
+BEGIN
+    UPDATE Product
+    SET quantity = quantity - NEW.quantity
+    WHERE id_product = NEW.product_id;
+END //
 DELIMITER ;
 
 
+DELIMITER ;

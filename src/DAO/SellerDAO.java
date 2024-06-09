@@ -116,10 +116,15 @@ public class SellerDAO {
             stmt.setInt(1, sellerId);
 
             stmt.executeUpdate();
+
+            System.out.println("Vendedor deletado com sucesso!");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Erro ao deletar vendedor: " + e.getMessage());
             throw e;
         }
     }
 
+
 }
+
+
