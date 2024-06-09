@@ -69,7 +69,7 @@ public class SellerDAO {
 
     public List<Seller> getAllSellers() {
         List<Seller> sellers = new ArrayList<>();
-        String sql = "SELECT s.id_seller, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number " +
+        String sql = "SELECT s.id_seller, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.registration_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number " +
                 "FROM Seller s " +
                 "JOIN Person p ON s.id_seller = p.id_person " +
                 "JOIN Address a ON p.address_id = a.id_address " +
@@ -87,6 +87,7 @@ public class SellerDAO {
                 String last_name = rs.getString("last_name");
                 String cpf = rs.getString("cpf");
                 Date birth_date = rs.getDate("birth_date");
+                Date registration_date = rs.getDate("registration_date");
                 String phone_number = rs.getString("phone_number");
                 String city = rs.getString("city");
                 String state = rs.getString("state");
@@ -96,7 +97,8 @@ public class SellerDAO {
 
                 User user = new User(id_user, name, email, senha);
                 Address addr = new Address(city, state, country, address, address_number);
-                Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
+                // Now, include the registration date in the Person object
+                Person person = new Person(last_name, cpf, birth_date, registration_date, phone_number, addr, user);
 
                 sellers.add(new Seller(person));
             }
@@ -106,6 +108,7 @@ public class SellerDAO {
 
         return sellers;
     }
+
 
     public void deleteSeller(int id_user) throws SQLException {
         String sql = "{CALL delete_seller(?)}";
@@ -143,6 +146,8 @@ public class SellerDAO {
                     String last_name = rs.getString("last_name");
                     String cpf = rs.getString("cpf");
                     Date birth_date = rs.getDate("birth_date");
+                    // Include the registration date from the result set
+                    Date registration_date = rs.getDate("registration_date");
                     String phone_number = rs.getString("phone_number");
                     String city = rs.getString("city");
                     String state = rs.getString("state");
@@ -153,7 +158,8 @@ public class SellerDAO {
 
                     User user = new User(id_user, name, email, senha);
                     Address addr = new Address(city, state, country, address, address_number);
-                    Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
+                    // Now, include the registration date in the Person object
+                    Person person = new Person(last_name, cpf, birth_date, registration_date, phone_number, addr, user);
 
                     seller = new Seller(person);
                 }
@@ -164,5 +170,6 @@ public class SellerDAO {
 
         return seller;
     }
+
 
 }

@@ -5,6 +5,7 @@ import Utils.DatabaseConnection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -251,7 +252,7 @@ public class Menu {
             User user = new User(1, name, email, senha);
 
             // Criando o objeto Person
-            Person person = new Person(lastName, cpf, birthDate, phoneNumber, clientAddress, user);
+            Person person = new Person(lastName, cpf, birthDate, null, phoneNumber, clientAddress, user);
 
             // Criando o objeto Client
             Client client = new Client(person);
@@ -295,6 +296,11 @@ public class Menu {
             System.out.print("Email: ");
             String email = scanner.nextLine();
 
+            if (!email.contains("@")) {
+                System.out.println("Email inválido. Deve conter '@'.");
+                return;
+            }
+
             System.out.print("Senha: ");
             String senha = scanner.nextLine();
 
@@ -304,8 +310,19 @@ public class Menu {
             System.out.print("CPF: ");
             String cpf = scanner.nextLine();
 
-            System.out.print("Data de nascimento (YYYY-MM-DD): ");
-            Date birthDate = Date.valueOf(scanner.nextLine());
+            if (cpf.length() != 11 || !cpf.matches("\\d+")) {
+                System.out.println("CPF inválido. Deve conter exatamente 11 dígitos numéricos.");
+                return;
+            }
+
+            Date birthDate = null;
+            try {
+                System.out.print("Data de nascimento (YYYY-MM-DD): ");
+                birthDate = Date.valueOf(scanner.nextLine());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Formato de data inválido. Use YYYY-MM-DD.");
+                return;
+            }
 
             System.out.print("Número de telefone: ");
             String phoneNumber = scanner.nextLine();
@@ -332,7 +349,7 @@ public class Menu {
             User user = new User(1, name, email, senha);
 
             // Criando o objeto Person
-            Person person = new Person(lastName, cpf, birthDate, phoneNumber, sellerAddress, user);
+            Person person = new Person(lastName, cpf, birthDate, null, phoneNumber, sellerAddress, user);
 
             // Criando o objeto Seller
             Seller seller = new Seller(person);
@@ -342,10 +359,10 @@ public class Menu {
 
             System.out.println("Vendedor inserido com sucesso!");
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
+
 
 
 
@@ -357,11 +374,23 @@ public class Menu {
             System.out.print("Email: ");
             String email = scanner.nextLine();
 
+            // Verificação do e-mail
+            if (!email.contains("@")) {
+                System.out.println("Email inválido. Deve conter '@'.");
+                return;
+            }
+
             System.out.print("Senha: ");
             String senha = scanner.nextLine();
 
             System.out.print("CNPJ: ");
             String cnpj = scanner.nextLine();
+
+            // Verificação do CNPJ
+            if (cnpj.length() != 14 || !cnpj.matches("\\d+")) {
+                System.out.println("CNPJ inválido. Deve conter exatamente 14 dígitos numéricos.");
+                return;
+            }
 
             System.out.print("Cidade: ");
             String city = scanner.nextLine();
@@ -382,46 +411,76 @@ public class Menu {
             Address supplierAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(1 ,name, email, senha);
+            User user = new User(1, name, email, senha);
 
             // Criando o objeto Supplier
-            Supplier supplier = new Supplier(name, cnpj, supplierAddress, user);
+            Supplier supplier = new Supplier(name, cnpj,null, supplierAddress, user);
 
             // Inserindo o fornecedor
             supplierDAO.insertSupplier(supplier);
 
             System.out.println("Fornecedor inserido com sucesso!");
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Erro ao cadastrar o fornecedor: " + e.getMessage());
         }
     }
 
 
     private void inserirProduto() {
-        System.out.print("Descrição: ");
-        String description = scanner.nextLine();
+        try {
+            System.out.print("Descrição: ");
+            String description = scanner.nextLine();
 
-        System.out.print("Quantidade: ");
-        int quantity = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha
+            System.out.print("Quantidade: ");
+            int quantity = 0;
+            try {
+                quantity = scanner.nextInt();
+                scanner.nextLine(); // Consumir a quebra de linha
+            } catch (InputMismatchException e) {
+                System.out.println("Quantidade inválida. Insira um número inteiro.");
+                scanner.nextLine(); // Consumir a entrada inválida
+                return;
+            }
 
-        System.out.print("Preço: ");
-        float price = scanner.nextFloat();
-        scanner.nextLine(); // Consumir a quebra de linha
+            if (quantity <= 0) {
+                System.out.println("Quantidade inválida. Insira um valor maior que zero.");
+                return;
+            }
 
-        // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
-        listarFornecedores(supplierDAO);
+            System.out.print("Preço: ");
+            float price = 0;
+            try {
+                price = Float.parseFloat(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Preço inválido. Insira um número válido.");
+                return;
+            }
 
-        System.out.print("ID do fornecedor: ");
-        int idSupplier = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha
+            if (price <= 0) {
+                System.out.println("Preço inválido. Insira um valor maior que zero.");
+                return;
+            }
 
-        productDAO.insertProduct(description, quantity, price, idSupplier);
+            // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
+            listarFornecedores(supplierDAO);
+
+            System.out.print("ID do fornecedor: ");
+            int idSupplier = 0;
+            try {
+                idSupplier = scanner.nextInt();
+                scanner.nextLine(); // Consumir a quebra de linha
+            } catch (InputMismatchException e) {
+                System.out.println("ID do fornecedor inválido. Insira um número inteiro.");
+                scanner.nextLine(); // Consumir a entrada inválida
+                return;
+            }
+
+            productDAO.insertProduct(description, quantity, price, idSupplier);
+            System.out.println("Produto inserido com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Erro ao inserir produto: " + e.getMessage());
+        }
     }
-
-
-
 
 
     public static void listarVendedores(SellerDAO sellerDAO) {
@@ -429,27 +488,28 @@ public class Menu {
 
         if (sellers.isEmpty()){
             System.out.println("Não há vendedores cadastrados.");
-        }
-
-        else {
+        } else {
             System.out.println("Lista de vendedores: ");
             for (Seller seller : sellers) {
-                System.out.println("ID: " + seller.getPerson().getUser().getId_user());
-                System.out.println("Name: " + seller.getPerson().getUser().getName());
-                System.out.println("Email: " + seller.getPerson().getUser().getEmail());
-                System.out.println("Last Name: " + seller.getPerson().getLast_name());
-                System.out.println("CPF: " + seller.getPerson().getCpf());
-                System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
-                System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
-                System.out.println("City: " + seller.getPerson().getAddress().getCity());
-                System.out.println("State: " + seller.getPerson().getAddress().getState());
-                System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
-                System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
-                System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
+                Person person = seller.getPerson();
+                System.out.println("ID: " + person.getUser().getId_user());
+                System.out.println("Name: " + person.getUser().getName());
+                System.out.println("Email: " + person.getUser().getEmail());
+                System.out.println("Last Name: " + person.getLast_name());
+                System.out.println("CPF: " + person.getCpf());
+                System.out.println("Birth Date: " + person.getBirth_date());
+                System.out.println("Registration Date: " + person.getRegistration_date());
+                System.out.println("Phone Number: " + person.getPhone_number());
+                System.out.println("City: " + person.getAddress().getCity());
+                System.out.println("State: " + person.getAddress().getState());
+                System.out.println("Country: " + person.getAddress().getCountry());
+                System.out.println("Address: " + person.getAddress().getAddress());
+                System.out.println("Address Number: " + person.getAddress().getAddress_number());
                 System.out.println("-----------------------");
             }
         }
     }
+
 
 
     public static void listarClientes(ClientDAO clientDAO) {
@@ -460,22 +520,25 @@ public class Menu {
         } else {
             System.out.println("Lista de Clientes:");
             for (Client client : clients) {
-                System.out.println("ID: " + client.getPerson().getUser().getId_user());
-                System.out.println("Nome: " + client.getPerson().getUser().getName());
-                System.out.println("Email: " + client.getPerson().getUser().getEmail());
-                System.out.println("Último Nome: " + client.getPerson().getLast_name());
-                System.out.println("CPF: " + client.getPerson().getCpf());
-                System.out.println("Data de Nascimento: " + client.getPerson().getBirth_date());
-                System.out.println("Número de Telefone: " + client.getPerson().getPhone_number());
-                System.out.println("Cidade: " + client.getPerson().getAddress().getCity());
-                System.out.println("Estado: " + client.getPerson().getAddress().getState());
-                System.out.println("País: " + client.getPerson().getAddress().getCountry());
-                System.out.println("Endereço: " + client.getPerson().getAddress().getAddress());
-                System.out.println("Número do Endereço: " + client.getPerson().getAddress().getAddress_number());
+                Person person = client.getPerson();
+                System.out.println("ID: " + person.getUser().getId_user());
+                System.out.println("Nome: " + person.getUser().getName());
+                System.out.println("Email: " + person.getUser().getEmail());
+                System.out.println("Último Nome: " + person.getLast_name());
+                System.out.println("CPF: " + person.getCpf());
+                System.out.println("Data de Nascimento: " + person.getBirth_date());
+                System.out.println("Data de Registro: " + person.getRegistration_date());
+                System.out.println("Número de Telefone: " + person.getPhone_number());
+                System.out.println("Cidade: " + person.getAddress().getCity());
+                System.out.println("Estado: " + person.getAddress().getState());
+                System.out.println("País: " + person.getAddress().getCountry());
+                System.out.println("Endereço: " + person.getAddress().getAddress());
+                System.out.println("Número do Endereço: " + person.getAddress().getAddress_number());
                 System.out.println("-----------------------");
             }
         }
     }
+
 
 
     public static void listarFornecedores(SupplierDAO supplierDAO) {
@@ -490,6 +553,7 @@ public class Menu {
                 System.out.println("Nome: " + supplier.getUser().getName());
                 System.out.println("Email: " + supplier.getUser().getEmail());
                 System.out.println("CNPJ: " + supplier.getCnpj());
+                // Include the registration date here
                 System.out.println("Data de Registro: " + supplier.getRegistration_date());
                 System.out.println("Cidade: " + supplier.getAddress().getCity());
                 System.out.println("Estado: " + supplier.getAddress().getState());
@@ -500,6 +564,7 @@ public class Menu {
             }
         }
     }
+
 
 
     public static void listarProdutos(ProductDAO productDAO) {
@@ -571,7 +636,7 @@ public class Menu {
             User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Person com os novos valores
-            Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
+            Person newPerson = new Person(lastName, cpf, birthDate, null, phoneNumber, newAddress, newUser);
 
             // Criar um objeto Client com os novos valores
             Client updatedClient = new Client(newPerson);
@@ -644,7 +709,7 @@ public class Menu {
             User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Person com os novos valores
-            Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
+            Person newPerson = new Person(lastName, cpf, birthDate, null, phoneNumber, newAddress, newUser);
 
             // Criar um objeto Seller com os novos valores
             Seller updatedSeller = new Seller(newPerson);
@@ -703,7 +768,7 @@ public class Menu {
             User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Supplier com os novos valores
-            Supplier updatedSupplier = new Supplier(name, cnpj, newAddress, newUser);
+            Supplier updatedSupplier = new Supplier(name, cnpj, null, newAddress, newUser);
             updatedSupplier.getUser().setId_user(idSelecionado); // Definir o ID do usuário
 
             // Atualizar o fornecedor no banco de dados

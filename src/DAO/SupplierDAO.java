@@ -85,6 +85,8 @@ public class SupplierDAO {
                 String email = rs.getString("email");
                 String senha = rs.getString("senha");
                 String cnpj = rs.getString("cnpj");
+                // Retrieve the registration date from the result set
+                Date registrationDate = rs.getDate("registration_date");
                 String city = rs.getString("city");
                 String state = rs.getString("state");
                 String country = rs.getString("country");
@@ -93,7 +95,8 @@ public class SupplierDAO {
 
                 Address addressObj = new Address(city, state, country, address, addressNumber);
                 User user = new User(id_user, name, email, senha);
-                Supplier supplier = new Supplier(name, cnpj, addressObj, user);
+                // Use the constructor that includes registration date
+                Supplier supplier = new Supplier(name, cnpj, registrationDate, addressObj, user);
 
                 suppliers.add(supplier);
             }
@@ -103,6 +106,7 @@ public class SupplierDAO {
 
         return suppliers;
     }
+
 
     public void deleteSupplier(int supplierId) throws SQLException {
         String sql = "{CALL delete_supplier(?)}";
@@ -134,6 +138,8 @@ public class SupplierDAO {
                     // Retrieve supplier data from the query result
                     String name = rs.getString("name");
                     String cnpj = rs.getString("cnpj");
+                    // Retrieve the registration date from the result set
+                    Date registrationDate = rs.getDate("registration_date");
 
                     // Retrieve the supplier's address
                     int addressId = rs.getInt("address_id");
@@ -144,7 +150,7 @@ public class SupplierDAO {
                     User user = UserDAO.getUserById(userId); // Assuming there's a method to get a user by ID
 
                     // Create the Supplier object
-                    supplier = new Supplier(name, cnpj, address, user);
+                    supplier = new Supplier(name, cnpj, registrationDate, address, user);
                 }
             }
         } catch (SQLException e) {
@@ -154,6 +160,7 @@ public class SupplierDAO {
 
         return supplier;
     }
+
 
 
 }

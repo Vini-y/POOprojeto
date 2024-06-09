@@ -33,27 +33,6 @@ public class PersonDAO {
         }
     }
 
-    public List<Person> getAllPersons() throws SQLException {
-        List<Person> persons = new ArrayList<>();
-        String sql = "SELECT * FROM Person";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                int id_person = resultSet.getInt("id_person");
-                String last_name = resultSet.getString("last_name");
-                String cpf = resultSet.getString("cpf");
-                Date birth_date = resultSet.getDate("birth_date");
-                String phone_number = resultSet.getString("phone_number");
-                Date registration_date = resultSet.getDate("registration_date");
-                int address_id = resultSet.getInt("address_id");
-                Address address = getAddressById(address_id);
-                User user = UserDAO.getUserById(id_person); // Aqui usamos o id_person como id_user
-                persons.add(new Person(last_name, cpf, birth_date, phone_number, address, user));
-            }
-        }
-        return persons;
-    }
-
     public Person getPersonById(int id) throws SQLException {
         String sql = "SELECT * FROM Person WHERE id_person = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -68,7 +47,7 @@ public class PersonDAO {
                     int address_id = resultSet.getInt("address_id");
                     Address address = getAddressById(address_id);
                     User user = UserDAO.getUserById(id); // Aqui usamos o id_person como id_user
-                    return new Person(last_name, cpf, birth_date, phone_number, address, user);
+                    return new Person(last_name, cpf, birth_date, registration_date, phone_number, address, user);
                 }
             }
         }

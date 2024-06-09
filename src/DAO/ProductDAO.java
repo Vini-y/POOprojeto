@@ -55,7 +55,7 @@ public class ProductDAO {
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT pr.id_product, pr.description, pr.quantity, pr.price, " +
-                "su.name AS supplier_name, su.cnpj, " +
+                "su.name AS supplier_name, su.cnpj, su.registration_date, " +
                 "a.city, a.state, a.country, a.address, a.address_number, " +
                 "u.id_user, u.name AS user_name, u.email, u.senha " +
                 "FROM Product pr " +
@@ -74,6 +74,7 @@ public class ProductDAO {
                 float price = rs.getFloat("price");
                 String supplierName = rs.getString("supplier_name");
                 String cnpj = rs.getString("cnpj");
+                Date registrationDate = rs.getDate("registration_date"); // Retrieve registration date
                 String city = rs.getString("city");
                 String state = rs.getString("state");
                 String country = rs.getString("country");
@@ -84,7 +85,7 @@ public class ProductDAO {
                 String email = rs.getString("email");
                 String senha = rs.getString("senha");
 
-                Supplier supplier = new Supplier(supplierName, cnpj,
+                Supplier supplier = new Supplier(supplierName, cnpj, registrationDate, // Pass registration date
                         new Address(city, state, country, address, addressNumber),
                         new User(id, userName, email, senha));
 
@@ -98,9 +99,10 @@ public class ProductDAO {
         return products;
     }
 
+
     public Product getProductById(int productId) {
         String query = "SELECT pr.id_product, pr.description, pr.quantity, pr.price, " +
-                "su.name AS supplier_name, su.cnpj, " +
+                "su.name AS supplier_name, su.cnpj, su.registration_date, " +
                 "a.city, a.state, a.country, a.address, a.address_number, " +
                 "u.id_user, u.name AS user_name, u.email, u.senha " +
                 "FROM Product pr " +
@@ -121,6 +123,7 @@ public class ProductDAO {
                     float price = rs.getFloat("price");
                     String supplierName = rs.getString("supplier_name");
                     String cnpj = rs.getString("cnpj");
+                    Date registrationDate = rs.getDate("registration_date"); // Retrieve registration date
                     String city = rs.getString("city");
                     String state = rs.getString("state");
                     String country = rs.getString("country");
@@ -133,7 +136,8 @@ public class ProductDAO {
 
                     Address supplierAddress = new Address(city, state, country, address, addressNumber);
                     User supplierUser = new User(userId, userName, email, senha);
-                    Supplier supplier = new Supplier(supplierName, cnpj, supplierAddress, supplierUser);
+                    // Create supplier with registration date
+                    Supplier supplier = new Supplier(supplierName, cnpj, registrationDate, supplierAddress, supplierUser);
 
                     return new Product(productId, description, quantity, price, supplier);
                 }
@@ -144,6 +148,7 @@ public class ProductDAO {
 
         return null;
     }
+
 
 
     public static void deleteProduct(int productId) {

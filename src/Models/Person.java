@@ -7,16 +7,17 @@ public class Person {
     private String last_name;
     private String cpf;
     private Date birth_date;
-    private String phone_number;
     private Date registration_date;
+    private String phone_number;
     private Address address;
     private User user;
 
     // Construtor
-    public Person(String last_name, String cpf, Date birth_date, String phone_number, Address address, User user) {
+    public Person(String last_name, String cpf, Date birth_date,Date registration_date, String phone_number, Address address, User user) {
         this.last_name = last_name;
         this.cpf = cpf;
         this.birth_date = birth_date;
+        this.registration_date = registration_date;
         this.phone_number = phone_number;
         this.address = address;
         this.user = user;
@@ -77,4 +78,6 @@ public class Person {
     public void setUser(User user) {
         this.user = user;
     }
+
+
 }

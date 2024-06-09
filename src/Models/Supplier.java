@@ -11,10 +11,11 @@ public class Supplier {
     private User user; // Referência ao objeto User
 
     // Construtor
-    public Supplier( String name, String cnpj, Address address, User user) {
+    public Supplier( String name, String cnpj, Date registration_date, Address address, User user) {
 
         this.name = name;
         this.cnpj = cnpj;
+        this.registration_date = registration_date;
         this.address = address;
         this.user = user;
     }
