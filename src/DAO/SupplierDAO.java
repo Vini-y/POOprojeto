@@ -92,7 +92,7 @@ public class SupplierDAO {
                 String addressNumber = rs.getString("address_number");
 
                 Address addressObj = new Address(city, state, country, address, addressNumber);
-                User user = new User( name, email, senha);
+                User user = new User(id_user, name, email, senha);
                 Supplier supplier = new Supplier(name, cnpj, addressObj, user);
 
                 suppliers.add(supplier);
@@ -121,7 +121,7 @@ public class SupplierDAO {
         }
     }
 
-    public Supplier getSupplierById(int id) {
+    public Supplier getSupplierById(int id) throws SQLException {
         String sql = "SELECT * FROM Supplier WHERE id_supplier = ?";
         Supplier supplier = null;
 
@@ -129,28 +129,31 @@ public class SupplierDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Retrieve supplier data from the query result
+                    String name = rs.getString("name");
+                    String cnpj = rs.getString("cnpj");
 
-            if (rs.next()) {
-                // Recuperar os dados do fornecedor do resultado da consulta
-                int supplierId = rs.getInt("id_supplier");
-                String name = rs.getString("name");
-                String cnpj = rs.getString("cnpj");
+                    // Retrieve the supplier's address
+                    int addressId = rs.getInt("address_id");
+                    Address address = AddressDAO.getAddressById(addressId);
 
-                // Recuperar o endereço do fornecedor
-                Address address = AddressDAO.getAddressById(rs.getInt("address_id"));
+                    // Retrieve the user related to the supplier
+                    int userId = rs.getInt("user_id"); // Assuming there's a user_id column in Supplier table
+                    User user = UserDAO.getUserById(userId); // Assuming there's a method to get a user by ID
 
-                // Recuperar o usuário do fornecedor
-                User user = getUserById(rs.getInt("user_id"));
-
-                // Criar o objeto Supplier com os dados obtidos
-                supplier = new Supplier( name, cnpj, address, user);
+                    // Create the Supplier object
+                    supplier = new Supplier(name, cnpj, address, user);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw e;  // Rethrow the exception after logging it
         }
 
         return supplier;
     }
+
 
 }

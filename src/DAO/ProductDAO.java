@@ -12,16 +12,16 @@ import java.util.List;
 
 public class ProductDAO {
 
-    public void insertProduct(Product product) {
+    public void insertProduct(String description, int quantity, float price, int idSupplier) {
         String sql = "{CALL insert_product(?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, product.getDescription());
-            stmt.setInt(2, product.getQuantity());
-            stmt.setFloat(3, product.getPrice());
-            stmt.setInt(4, product.getSupplier().getUser().getId_user());
+            stmt.setString(1, description);
+            stmt.setInt(2, quantity);
+            stmt.setFloat(3, price);
+            stmt.setInt(4, idSupplier);
 
             stmt.execute();
 
@@ -86,9 +86,9 @@ public class ProductDAO {
 
                 Supplier supplier = new Supplier(supplierName, cnpj,
                         new Address(city, state, country, address, addressNumber),
-                        new User( userName, email, senha));
+                        new User(id, userName, email, senha));
 
-                Product product = new Product( description, quantity, price, supplier);
+                Product product = new Product(id, description, quantity, price, supplier);
                 products.add(product);
             }
         } catch (SQLException e) {

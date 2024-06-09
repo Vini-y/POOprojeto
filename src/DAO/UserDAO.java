@@ -36,7 +36,7 @@ public class UserDAO {
                 String name = resultSet.getString("name");
                 String email = resultSet.getString("email");
                 String senha = resultSet.getString("senha");
-                users.add(new User( name, email, senha));
+                users.add(new User(id_user, name, email, senha));
             }
         }
         return users;
@@ -51,7 +51,7 @@ public class UserDAO {
                     String name = resultSet.getString("name");
                     String email = resultSet.getString("email");
                     String senha = resultSet.getString("senha");
-                    return new User(name, email, senha);
+                    return new User(id, name, email, senha);
                 }
             }
         }
