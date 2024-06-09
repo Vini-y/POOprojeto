@@ -88,12 +88,10 @@ public class Menu {
                 if ((o.contains("Sair"))) {
                     filteredOpcoes.add(o);
                 }
-                /*
             } else if (clienteTipo.equals("Admin")){
                 if (!(o.contains("Registrar Venda"))) {
                     filteredOpcoes.add(o);
                 }
-                */
             } else {
                 filteredOpcoes.add(o);
             }
