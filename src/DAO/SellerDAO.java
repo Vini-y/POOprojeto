@@ -94,7 +94,7 @@ public class SellerDAO {
                 String address = rs.getString("address");
                 String address_number = rs.getString("address_number");
 
-                User user = new User( name, email, senha);
+                User user = new User(id_user, name, email, senha);
                 Address addr = new Address(city, state, country, address, address_number);
                 Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
 
@@ -149,8 +149,9 @@ public class SellerDAO {
                     String country = rs.getString("country");
                     String address = rs.getString("address");
                     String address_number = rs.getString("address_number");
+                    int id_user = rs.getInt("id_user");
 
-                    User user = new User(name, email, senha);
+                    User user = new User(id_user, name, email, senha);
                     Address addr = new Address(city, state, country, address, address_number);
                     Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
 

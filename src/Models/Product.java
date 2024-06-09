@@ -8,7 +8,8 @@ public class Product {
     private Supplier supplier; // Referência ao objeto Supplier
 
     // Construtor
-    public Product( String description, int quantity, float price, Supplier supplier) {
+    public Product(int id_product, String description, int quantity, float price, Supplier supplier) {
+        this.id_product = id_product;
         this.description = description;
         this.quantity = quantity;
         this.price = price;

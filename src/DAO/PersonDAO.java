@@ -127,7 +127,7 @@ public class PersonDAO {
                     String name = resultSet.getString("name");
                     String email = resultSet.getString("email");
                     String senha = resultSet.getString("senha");
-                    return new User( name, email, senha);
+                    return new User(id, name, email, senha);
                 }
             }
         }

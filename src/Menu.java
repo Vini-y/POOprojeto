@@ -250,7 +250,7 @@ public class Menu {
             Address clientAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(name, email, senha);
+            User user = new User(1, name, email, senha);
 
             // Criando o objeto Person
             Person person = new Person(lastName, cpf, birthDate, phoneNumber, clientAddress, user);
@@ -331,7 +331,7 @@ public class Menu {
             Address sellerAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(name, email, senha);
+            User user = new User(1, name, email, senha);
 
             // Criando o objeto Person
             Person person = new Person(lastName, cpf, birthDate, phoneNumber, sellerAddress, user);
@@ -384,7 +384,7 @@ public class Menu {
             Address supplierAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(name, email, senha);
+            User user = new User(1 ,name, email, senha);
 
             // Criando o objeto Supplier
             Supplier supplier = new Supplier(name, cnpj, supplierAddress, user);
@@ -401,46 +401,25 @@ public class Menu {
 
 
     private void inserirProduto() {
-        try {
-            Scanner scanner = new Scanner(System.in);
+        System.out.print("Descrição: ");
+        String description = scanner.nextLine();
 
-            System.out.print("Descrição: ");
-            String description = scanner.nextLine();
+        System.out.print("Quantidade: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine(); // Consumir a quebra de linha
 
-            System.out.print("Quantidade: ");
-            int quantity = scanner.nextInt();
-            scanner.nextLine(); // Consumir a quebra de linha após o nextInt()
+        System.out.print("Preço: ");
+        float price = scanner.nextFloat();
+        scanner.nextLine(); // Consumir a quebra de linha
 
-            System.out.print("Preço: ");
-            float price = scanner.nextFloat();
-            scanner.nextLine(); // Consumir a quebra de linha após o nextFloat()
+        // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
+        listarFornecedores(supplierDAO);
 
-            // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
-            listarFornecedores(supplierDAO);
+        System.out.print("ID do fornecedor: ");
+        int idSupplier = scanner.nextInt();
+        scanner.nextLine(); // Consumir a quebra de linha
 
-            System.out.print("ID do fornecedor: ");
-            int idSupplier = scanner.nextInt();
-
-            // Buscar o Supplier com o ID fornecido pelo usuário
-            Supplier supplier = supplierDAO.getSupplierById(idSupplier);
-
-            if (supplier != null) {
-                // Criar um objeto Product com os dados inseridos pelo usuário e o Supplier obtido
-                Product product = new Product(description, quantity, price, supplier);
-
-                // Inserir o produto
-                productDAO.insertProduct(product);
-
-                System.out.println("Produto inserido com sucesso!");
-            } else {
-                System.out.println("Fornecedor com o ID fornecido não encontrado.");
-            }
-
-            scanner.close(); // Fechar o scanner após o uso
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erro ao inserir produto: " + e.getMessage());
-        }
+        productDAO.insertProduct(description, quantity, price, idSupplier);
     }
 
 
@@ -450,20 +429,27 @@ public class Menu {
     public static void listarVendedores(SellerDAO sellerDAO) {
         List<Seller> sellers = sellerDAO.getAllSellers();
 
-        for (Seller seller : sellers) {
-            System.out.println("ID: " + seller.getPerson().getUser().getId_user());
-            System.out.println("Name: " + seller.getPerson().getUser().getName());
-            System.out.println("Email: " + seller.getPerson().getUser().getEmail());
-            System.out.println("Last Name: " + seller.getPerson().getLast_name());
-            System.out.println("CPF: " + seller.getPerson().getCpf());
-            System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
-            System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
-            System.out.println("City: " + seller.getPerson().getAddress().getCity());
-            System.out.println("State: " + seller.getPerson().getAddress().getState());
-            System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
-            System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
-            System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
-            System.out.println("-----------------------");
+        if (sellers.isEmpty()){
+            System.out.println("Não há vendedores cadastrados.");
+        }
+
+        else {
+            System.out.println("Lista de vendedores: ");
+            for (Seller seller : sellers) {
+                System.out.println("ID: " + seller.getPerson().getUser().getId_user());
+                System.out.println("Name: " + seller.getPerson().getUser().getName());
+                System.out.println("Email: " + seller.getPerson().getUser().getEmail());
+                System.out.println("Last Name: " + seller.getPerson().getLast_name());
+                System.out.println("CPF: " + seller.getPerson().getCpf());
+                System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
+                System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
+                System.out.println("City: " + seller.getPerson().getAddress().getCity());
+                System.out.println("State: " + seller.getPerson().getAddress().getState());
+                System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
+                System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
+                System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
+                System.out.println("-----------------------");
+            }
         }
     }
 
@@ -584,7 +570,7 @@ public class Menu {
             Address newAddress = new Address(city, state, country, address, addressNumber);
 
             // Criar um objeto User com os novos valores
-            User newUser = new User(name, email, senha);
+            User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Person com os novos valores
             Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
@@ -657,7 +643,7 @@ public class Menu {
             Address newAddress = new Address(city, state, country, address, addressNumber);
 
             // Criar um objeto User com os novos valores
-            User newUser = new User(name, email, senha);
+            User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Person com os novos valores
             Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
@@ -716,7 +702,7 @@ public class Menu {
             Address newAddress = new Address(city, state, country, address, addressNumber);
 
             // Criar um objeto User com os novos valores
-            User newUser = new User(name, email, senha);
+            User newUser = new User(1, name, email, senha);
 
             // Criar um objeto Supplier com os novos valores
             Supplier updatedSupplier = new Supplier(name, cnpj, newAddress, newUser);
@@ -759,7 +745,7 @@ public class Menu {
             Supplier fornecedor = supplierDAO.getSupplierById(idFornecedor);
 
             // Criar um objeto Product com os novos valores
-            Product novoProduto = new Product( novaDescricao, novaQuantidade, novoPreco, fornecedor);
+            Product novoProduto = new Product(1, novaDescricao, novaQuantidade, novoPreco, fornecedor);
 
             // Atualizar o produto no banco de dados
             productDAO.updateProduct(novoProduto);
@@ -773,43 +759,75 @@ public class Menu {
 
 
     public static void deletarVendedor(SellerDAO sellerDAO, Scanner scanner) {
-        System.out.print("Digite o ID do vendedor que deseja deletar: ");
-        int idVendedor = scanner.nextInt();
-        try {
-            sellerDAO.deleteSeller(idVendedor);
-            System.out.println("Vendedor deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+        List<Seller> sellers = sellerDAO.getAllSellers();
+
+        if (sellers.isEmpty()) {
+            System.out.println("Não há vendedores cadastrados.");
+        }
+        else {
+            listarVendedores(sellerDAO);
+            System.out.print("Digite o ID do vendedor que deseja deletar: ");
+            int idVendedor = scanner.nextInt();
+            try {
+                sellerDAO.deleteSeller(idVendedor);
+                System.out.println("Vendedor deletado com sucesso!");
+            } catch (SQLException e) {
+                System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+            }
         }
     }
 
     public static void deletarCliente(ClientDAO clientDAO, Scanner scanner) {
-        System.out.print("Digite o ID do cliente que deseja deletar: ");
-        int idCliente = scanner.nextInt();
-        try {
-            clientDAO.deleteClient(idCliente);
-            System.out.println("Cliente deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar cliente: " + e.getMessage());
-        }
+        List<Client> clients = clientDAO.getAllClients();
+
+        if (clients.isEmpty()) {
+            System.out.println("Não há clientes cadastrados.");
+            }
+        else{
+                listarClientes(clientDAO);
+                System.out.print("Digite o ID do cliente que deseja deletar: ");
+                int idCliente = scanner.nextInt();
+                try {
+                    clientDAO.deleteClient(idCliente);
+                    System.out.println("Cliente deletado com sucesso!");
+                } catch (SQLException e) {
+                    System.out.println("Erro ao deletar cliente: " + e.getMessage());
+                }
+            }
     }
 
     public static void deletarFornecedor(SupplierDAO supplierDAO, Scanner scanner) {
-        System.out.print("Digite o ID do fornecedor que deseja deletar: ");
-        int idFornecedor = scanner.nextInt();
-        try {
-            supplierDAO.deleteSupplier(idFornecedor);
-            System.out.println("Fornecedor deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
+        List<Supplier> suppliers = supplierDAO.getAllSuppliers();
+
+        if (suppliers.isEmpty()) {
+            System.out.println("Não há fornecedores cadastrados.");
+        }
+
+        else {
+            listarFornecedores(supplierDAO);
+            System.out.print("Digite o ID do fornecedor que deseja deletar: ");
+            int idFornecedor = scanner.nextInt();
+            try {
+                supplierDAO.deleteSupplier(idFornecedor);
+                System.out.println("Fornecedor deletado com sucesso!");
+            } catch (SQLException e) {
+                System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
+            }
         }
     }
 
     public static void deletarProduto(ProductDAO productDAO, Scanner scanner) {
-        System.out.print("Digite o ID do produto que deseja deletar: ");
-        int idProduto = scanner.nextInt();
-        productDAO.deleteProduct(idProduto);
-        System.out.println("Produto deletado com sucesso!");
+        List<Product> products = productDAO.getAllProducts();
+
+        if (products.isEmpty()) {
+            System.out.println("Não há produtos cadastrados.");
+        } else {
+            listarProdutos(productDAO);
+            System.out.print("Digite o ID do produto que deseja deletar: ");
+            int idProduto = scanner.nextInt();
+            productDAO.deleteProduct(idProduto);
+            System.out.println("Produto deletado com sucesso!");
+        }
     }
 
     private void registarVenda(Scanner scanner) {
@@ -874,8 +892,6 @@ public class Menu {
             System.out.println("\nNúmero de parcelas (1 para ignorar): ");
             parcelas = scanner.nextInt();
         }
-
-        System.out.println(client.getPerson().getUser().getId_user());
 
         Sale sale = new Sale(0, client, seller, new Timestamp(2024), payment, precoTotal, parcelas);
 

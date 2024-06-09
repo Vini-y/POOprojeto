@@ -92,7 +92,7 @@ public class SupplierDAO {
                 String addressNumber = rs.getString("address_number");
 
                 Address addressObj = new Address(city, state, country, address, addressNumber);
-                User user = new User( name, email, senha);
+                User user = new User(id_user, name, email, senha);
                 Supplier supplier = new Supplier(name, cnpj, addressObj, user);
 
                 suppliers.add(supplier);
