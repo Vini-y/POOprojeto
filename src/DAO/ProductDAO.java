@@ -61,7 +61,7 @@ public class ProductDAO {
                 "FROM Product pr " +
                 "INNER JOIN Supplier su ON pr.id_supplier = su.id_supplier " +
                 "INNER JOIN Address a ON su.address_id = a.id_address " +
-                "INNER JOIN User u ON su.user_id = u.id_user";
+                "INNER JOIN User u ON su.id_supplier = u.id_user";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);

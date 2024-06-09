@@ -72,7 +72,7 @@ public class SupplierDAO {
                 "a.city, a.state, a.country, a.address, a.address_number " +
                 "FROM Supplier s " +
                 "INNER JOIN Address a ON s.address_id = a.id_address " +
-                "INNER JOIN User u ON s.user_id = u.id_user";
+                "INNER JOIN User u ON s.id_supplier = u.id_user";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -136,7 +136,6 @@ public class SupplierDAO {
                 int supplierId = rs.getInt("id_supplier");
                 String name = rs.getString("name");
                 String cnpj = rs.getString("cnpj");
-                Date registrationDate = rs.getDate("registration_date");
 
                 // Recuperar o endereço do fornecedor
                 Address address = AddressDAO.getAddressById(rs.getInt("address_id"));

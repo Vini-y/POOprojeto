@@ -11,15 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressDAO {
-    private static Connection connection;
-
-    public AddressDAO(Connection connection) {
-        this.connection = connection;
-    }
 
     public void insertAddress(Address address) throws SQLException {
         String sql = "INSERT INTO Address (city, state, country, address, address_number) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, address.getCity());
             statement.setString(2, address.getState());
             statement.setString(3, address.getCountry());
@@ -32,7 +28,8 @@ public class AddressDAO {
     public List<Address> getAllAddresses() throws SQLException {
         List<Address> addresses = new ArrayList<>();
         String sql = "SELECT * FROM Address";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 int id_address = resultSet.getInt("id_address");
@@ -49,7 +46,8 @@ public class AddressDAO {
 
     public static Address getAddressById(int id) throws SQLException {
         String sql = "SELECT * FROM Address WHERE id_address = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -67,7 +65,8 @@ public class AddressDAO {
 
     public void updateAddress(Address address) throws SQLException {
         String sql = "UPDATE Address SET city = ?, state = ?, country = ?, address = ?, address_number = ? WHERE id_address = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, address.getCity());
             statement.setString(2, address.getState());
             statement.setString(3, address.getCountry());
@@ -80,37 +79,10 @@ public class AddressDAO {
 
     public void deleteAddress(int id) throws SQLException {
         String sql = "DELETE FROM Address WHERE id_address = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.executeUpdate();
         }
-    }
-
-    public static Address getAddressBySupplierId(int idSupplier) {
-        Address address = null;
-        String sql = "SELECT * FROM Address WHERE supplier_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idSupplier);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    String city = rs.getString("city");
-                    String state = rs.getString("state");
-                    String country = rs.getString("country");
-                    String addressLine = rs.getString("address");
-                    String addressNumber = rs.getString("address_number");
-
-                    // Crie o objeto Address com os dados recuperados
-                    address = new Address(city, state, country, addressLine, addressNumber);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Erro ao obter endereço por ID do fornecedor: " + e.getMessage());
-        }
-
-        return address;
     }
 }
