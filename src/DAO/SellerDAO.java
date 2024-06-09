@@ -122,4 +122,47 @@ public class SellerDAO {
             throw e;
         }
     }
+
+    public Seller getSellerById(int id_seller) {
+        String sql = "SELECT * FROM Seller s " +
+                "JOIN Person p ON s.id_seller = p.id_person " +
+                "JOIN Address a ON p.address_id = a.id_address " +
+                "JOIN User u ON p.id_person = u.id_user " +
+                "WHERE s.id_seller = ?";
+        Seller seller = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id_seller);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String senha = rs.getString("senha");
+                    String last_name = rs.getString("last_name");
+                    String cpf = rs.getString("cpf");
+                    Date birth_date = rs.getDate("birth_date");
+                    String phone_number = rs.getString("phone_number");
+                    String city = rs.getString("city");
+                    String state = rs.getString("state");
+                    String country = rs.getString("country");
+                    String address = rs.getString("address");
+                    String address_number = rs.getString("address_number");
+                    int id_user = rs.getInt("id_user");
+
+                    User user = new User(id_user, name, email, senha);
+                    Address addr = new Address(city, state, country, address, address_number);
+                    Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
+
+                    seller = new Seller(person);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return seller;
+    }
+
 }

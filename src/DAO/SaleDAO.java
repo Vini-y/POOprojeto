@@ -5,34 +5,39 @@ import Models.Sale;
 import Models.Payment;
 import Models.Product;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class SaleDAO {
 
-    public void insertSale(Sale sale) {
-        String sql = "{CALL insert_sale(?, ?, ?, ?, ?, ?)}";
+    public int insertSale(Sale sale) {
+        String sql = "{CALL insert_sale(?, ?, ?, ?, ?, ?, ?)}";
+        int lastInsertId = -1;
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareCall(sql)) {
+             CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, sale.getClient().getPerson().getUser().getId_user());
             stmt.setInt(2, sale.getSeller().getPerson().getUser().getId_user());
-            stmt.setTimestamp(3, (Timestamp) sale.getSale_date());
+            stmt.setTimestamp(3, sale.getSale_date());
             stmt.setInt(4, sale.getPayment().getId_pay());
             stmt.setFloat(5, sale.getTotal_value());
             stmt.setInt(6, sale.getParcelas());
 
+            // Register the out parameter to capture the generated key
+            stmt.registerOutParameter(7, java.sql.Types.INTEGER);
+
             stmt.executeUpdate();
+
+            // Retrieve the last insert ID from the out parameter
+            lastInsertId = stmt.getInt(7);
 
             System.out.println("Venda inserida com sucesso!");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return lastInsertId;
     }
 
     public static void getSaleItems(int saleId) {
@@ -70,9 +75,9 @@ public class SaleDAO {
                 "FROM Sale s " +
                 "INNER JOIN User uc ON s.id_client = uc.id_user " +
                 "INNER JOIN User us ON s.id_seller = us.id_user " +
-                "INNER JOIN Sale_itens si ON s.id_sale = si.sale_id " +
-                "INNER JOIN Product pr ON si.product_id = pr.id_product " +
-                "INNER JOIN Pay p ON s.payment = p.id_Pay"; // Join com a tabela Pay para obter o tipo de pagamento
+                "LEFT JOIN Sale_itens si ON s.id_sale = si.sale_id " +
+                "LEFT JOIN Product pr ON si.product_id = pr.id_product " +
+                "LEFT JOIN Pay p ON s.payment = p.id_Pay"; // Join com a tabela Pay para obter o tipo de pagamento
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -94,7 +99,7 @@ public class SaleDAO {
                 }
 
                 // Item de venda
-                System.out.println("  Descrição do Produto: " + rs.getString("product_description"));
+                System.out.println("\n  Descrição do Produto: " + rs.getString("product_description"));
                 System.out.println("  Quantidade: " + rs.getInt("quantity"));
                 System.out.println("  Valor Total do Item: " + rs.getFloat("item_total"));
                 System.out.println("--------------------------");

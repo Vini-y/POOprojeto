@@ -1,18 +1,19 @@
 package Models;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.sql.Date;
 
 public class Sale {
     private int id_sale;
     private Client client; // Referência ao cliente
     private Seller seller; // Referência ao vendedor
-    private Date sale_date;
+    private Timestamp sale_date;
     private Payment payment; // Referência ao tipo de pagamento
     private float total_value;
     private int parcelas;
 
     // Construtor
-    public Sale(int id_sale, Client client, Seller seller, Date sale_date, Payment payment, float total_value, int parcelas) {
+    public Sale(int id_sale, Client client, Seller seller, Timestamp sale_date, Payment payment, float total_value, int parcelas) {
         this.id_sale = id_sale;
         this.client = client;
         this.seller = seller;
@@ -47,11 +48,11 @@ public class Sale {
         this.seller = seller;
     }
 
-    public Date getSale_date() {
+    public Timestamp getSale_date() {
         return sale_date;
     }
 
-    public void setSale_date(Date sale_date) {
+    public void setSale_date(Timestamp sale_date) {
         this.sale_date = sale_date;
     }
 

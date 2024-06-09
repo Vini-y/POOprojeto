@@ -4,6 +4,7 @@ import Utils.DatabaseConnection;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -17,18 +18,26 @@ public class Menu {
     private SellerDAO sellerDAO;
     private SupplierDAO supplierDAO;
     private ProductDAO productDAO;
+    private SaleDAO saleDAO;
+    private PayDAO payDAO;
+    private SaleItemDAO saleItemDAO;
     private String clienteTipo;
+    private int clienteId;
 
 
-    public Menu(String clienteTipo) {
+    public Menu(int clienteId, String clienteTipo) {
         scanner = new Scanner(System.in);
         clientDAO = new ClientDAO();
         adminDAO = new AdminDAO();
         sellerDAO = new SellerDAO();
         supplierDAO = new SupplierDAO();
         productDAO = new ProductDAO();
+        saleDAO = new SaleDAO();
+        payDAO = new PayDAO();
+        saleItemDAO = new SaleItemDAO();
 
         this.clienteTipo = clienteTipo;
+        this.clienteId = clienteId;
     }
 
     private ArrayList<String> filtrarOpcoes() {
@@ -80,6 +89,12 @@ public class Menu {
                 if ((o.contains("Sair"))) {
                     filteredOpcoes.add(o);
                 }
+                /*
+            } else if (clienteTipo.equals("Admin")){
+                if (!(o.contains("Registrar Venda"))) {
+                    filteredOpcoes.add(o);
+                }
+                */
             } else {
                 filteredOpcoes.add(o);
             }
@@ -165,7 +180,7 @@ public class Menu {
                         deletarProduto(productDAO, scanner);
                         break;
                     case "Registrar Venda":
-
+                        registarVenda(scanner);
                         break;
                     case "Listar Vendas":
                         SaleDAO.listarVendas();
@@ -394,7 +409,7 @@ public class Menu {
             Address supplierAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(1, name, email, senha);
+            User user = new User(1 ,name, email, senha);
 
             // Criando o objeto Supplier
             Supplier supplier = new Supplier(name, cnpj, supplierAddress, user);
@@ -409,6 +424,25 @@ public class Menu {
 
 
     private void inserirProduto() {
+        System.out.print("Descrição: ");
+        String description = scanner.nextLine();
+
+        System.out.print("Quantidade: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine(); // Consumir a quebra de linha
+
+        System.out.print("Preço: ");
+        float price = scanner.nextFloat();
+        scanner.nextLine(); // Consumir a quebra de linha
+
+        // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
+        listarFornecedores(supplierDAO);
+
+        System.out.print("ID do fornecedor: ");
+        int idSupplier = scanner.nextInt();
+        scanner.nextLine(); // Consumir a quebra de linha
+
+        productDAO.insertProduct(description, quantity, price, idSupplier);
         try {
             System.out.print("Descrição: ");
             String description = scanner.nextLine();
@@ -806,6 +840,7 @@ public class Menu {
             int idVendedor = scanner.nextInt();
             try {
                 sellerDAO.deleteSeller(idVendedor);
+                System.out.println("Vendedor deletado com sucesso!");
             } catch (SQLException e) {
                 System.out.println("Erro ao deletar vendedor: " + e.getMessage());
             }
@@ -824,6 +859,8 @@ public class Menu {
                 int idCliente = scanner.nextInt();
                 try {
                     clientDAO.deleteClient(idCliente);
+                    System.out.println("Cliente deletado com sucesso!");
+
                 } catch (SQLException e) {
                     System.out.println("Erro ao deletar cliente: " + e.getMessage());
                 }
@@ -843,11 +880,11 @@ public class Menu {
             int idFornecedor = scanner.nextInt();
             try {
                 supplierDAO.deleteSupplier(idFornecedor);
+                System.out.println("Fornecedor deletado com sucesso!");
             } catch (SQLException e) {
                 System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
             }
         }
-    }
 
     public static void deletarProduto(ProductDAO productDAO, Scanner scanner) {
         List<Product> products = productDAO.getAllProducts();
@@ -862,4 +899,83 @@ public class Menu {
             System.out.println("Produto deletado com sucesso!");
         }
     }
-}
+
+    private void registarVenda(Scanner scanner) {
+        /*
+        Somente vendedor pode registrar uma venda. Dados: Cliente (Cliente); itens (ArrayList<Produto, qtde>);
+        tipoPagamento (crédito, débito ou dinheiro);
+         */
+
+        System.out.println("\nRegistrar uma venda\n===================");
+
+        System.out.print("\nId do cliente: ");
+        int idCliente = scanner.nextInt();
+
+        System.out.print("\nTipo de pagamento: \n(1) Dinheiro\n(2) Débito\n(3) Crédito\n> ");
+        int tipoPagamento = scanner.nextInt();
+
+        listarProdutos(productDAO);
+        ArrayList<Product> itens = new ArrayList<>();
+        ArrayList<Integer> qtde = new ArrayList<>();
+
+        int entrada = 0;
+        while (entrada != 2) {
+            System.out.println("(1) Adicionar um produto");
+            System.out.println("(2) Finalizar venda");
+
+            System.out.print("> ");
+            entrada = scanner.nextInt();
+
+            switch (entrada) {
+
+                case 1:
+                    System.out.print("Digite o id do produto que gostaria de adicionar: ");
+                    int newIdProduto = scanner.nextInt();
+                    System.out.print("Digite a quantidade: ");
+                    int quantidadeProduto = scanner.nextInt();
+
+                    itens.add(productDAO.getProductById(newIdProduto));
+                    qtde.add(quantidadeProduto);
+                    break;
+                case 2:
+                    System.out.println("Finalizando a venda...");
+                    break;
+                default:
+                    System.out.println("Entrada inválida!");
+                    break;
+            }
+        }
+
+        Client client = clientDAO.getClientById(idCliente);
+        Payment payment = payDAO.getPaymentById(tipoPagamento);
+        Seller seller = sellerDAO.getSellerById(clienteId);
+
+        float precoTotal = 0;
+
+        for (int i = 0; i < itens.size(); i++) {
+            precoTotal += itens.get(i).getPrice() * qtde.get(i);
+        }
+
+        int parcelas = 1;
+        if (tipoPagamento == 3 && precoTotal >= 1000){
+            System.out.println("Crédito\n=======\nParcelas em até 5x sem juros.\nJuros de 5% para parcelas acima de 5x.\n");
+            System.out.println("\nNúmero de parcelas (1 para ignorar): ");
+            parcelas = scanner.nextInt();
+        }
+
+        Sale sale = new Sale(0, client, seller, new Timestamp(2024), payment, precoTotal, parcelas);
+
+        int sale_id = saleDAO.insertSale(sale);
+
+        sale.setId_sale(sale_id);
+
+        try {
+            for (int i = 0; i < itens.size(); i++) {
+                SaleItem saleItem = new SaleItem(sale_id, sale, itens.get(i), qtde.get(i), itens.get(i).getPrice());
+                saleItemDAO.insertSaleItem(saleItem);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    }

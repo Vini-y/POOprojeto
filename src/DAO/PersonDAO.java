@@ -117,5 +117,22 @@ public class PersonDAO {
         return null;
     }
 
-    
+    // Método auxiliar para obter um usuário pelo ID
+    private User getUserById(int id) throws SQLException {
+        String sql = "SELECT * FROM User WHERE id_user = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    String email = resultSet.getString("email");
+                    String senha = resultSet.getString("senha");
+                    return new User(id, name, email, senha);
+                }
+            }
+        }
+        return null;
+    }
+
+
 }

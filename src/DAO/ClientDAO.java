@@ -1,9 +1,6 @@
 package DAO;
 
-import Models.Address;
-import Models.Client;
-import Models.Person;
-import Models.User;
+import Models.*;
 import Utils.DatabaseConnection;
 
 import java.sql.*;
@@ -119,5 +116,48 @@ public class ClientDAO {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    public Client getClientById(int id_client) {
+        String sql = "SELECT u.id_user, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number " +
+                "FROM Client c " +
+                "JOIN Person p ON c.id_client = p.id_person " +
+                "JOIN Address a ON p.address_id = a.id_address " +
+                "JOIN User u ON p.id_person = u.id_user " +
+                "WHERE c.id_client = ?";
+        Client client = null;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id_client);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int id_user = rs.getInt("id_user");
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String senha = rs.getString("senha");
+                    String last_name = rs.getString("last_name");
+                    String cpf = rs.getString("cpf");
+                    Date birth_date = rs.getDate("birth_date");
+                    String phone_number = rs.getString("phone_number");
+                    String city = rs.getString("city");
+                    String state = rs.getString("state");
+                    String country = rs.getString("country");
+                    String address = rs.getString("address");
+                    String address_number = rs.getString("address_number");
+
+                    User user = new User(id_user, name, email, senha);
+                    Address addr = new Address(city, state, country, address, address_number);
+                    Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
+
+                    client = new Client(person);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return client;
     }
 }

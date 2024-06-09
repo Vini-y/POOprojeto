@@ -1,4 +1,6 @@
 import DAO.LoginDAO;
+import Models.User;
+import Models.UserLoginInfo;
 import Utils.DatabaseConnection;
 
 import java.sql.SQLException;
@@ -11,6 +13,11 @@ public class Main {
         // Tentar conectar ao banco de dados uma vez
         try {
             DatabaseConnection.getConnection();
+
+            UserLoginInfo user = login();
+            Menu menu = new Menu(user.getUserId(), user.getUserType());
+            menu.exibirMenu();
+          
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());
@@ -49,7 +56,7 @@ public class Main {
         }
     }
 
-    public static String login(Scanner sc) throws SQLException {
+    public static UserLoginInfo login() throws SQLException {
         LoginDAO loginDAO = new LoginDAO();
 
         System.out.print("\nLOGIN\n=====\n");
@@ -59,8 +66,8 @@ public class Main {
         System.out.print("\nPassword: ");
         String password = sc.nextLine();
 
-        String userType = loginDAO.login(email, password);
+        UserLoginInfo userInfo = loginDAO.login(email, password);
 
-        return userType;
+        return userInfo;
     }
 }

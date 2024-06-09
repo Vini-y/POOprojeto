@@ -1,5 +1,6 @@
 package DAO;
 
+import Models.UserLoginInfo;
 import Utils.DatabaseConnection;
 
 import java.sql.Connection;
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 
 public class LoginDAO {
 
-    public String login(String email, String senha) throws SQLException {
+    public UserLoginInfo login(String email, String senha) throws SQLException {
         String sqlUser = "SELECT id_user FROM User WHERE email = ? AND senha = ?";
         String sqlAdmin = "SELECT id_admin FROM admin WHERE id_admin = ?";
         String sqlClient = "SELECT id_client FROM Client WHERE id_client = ?";
@@ -35,7 +36,7 @@ public class LoginDAO {
                             stmtAdmin.setInt(1, userId);
                             try (ResultSet rsAdmin = stmtAdmin.executeQuery()) {
                                 if (rsAdmin.next()) {
-                                    return "Admin";
+                                    return new UserLoginInfo(userId, "Admin");
                                 }
                             }
                         }
@@ -45,7 +46,7 @@ public class LoginDAO {
                             stmtClient.setInt(1, userId);
                             try (ResultSet rsClient = stmtClient.executeQuery()) {
                                 if (rsClient.next()) {
-                                    return "Client";
+                                    return new UserLoginInfo(userId, "Client");
                                 }
                             }
                         }
@@ -55,7 +56,7 @@ public class LoginDAO {
                             stmtSeller.setInt(1, userId);
                             try (ResultSet rsSeller = stmtSeller.executeQuery()) {
                                 if (rsSeller.next()) {
-                                    return "Seller";
+                                    return new UserLoginInfo(userId, "Seller");
                                 }
                             }
                         }
@@ -65,7 +66,7 @@ public class LoginDAO {
                             stmtSupplier.setInt(1, userId);
                             try (ResultSet rsSupplier = stmtSupplier.executeQuery()) {
                                 if (rsSupplier.next()) {
-                                    return "Supplier";
+                                    return new UserLoginInfo(userId, "Supplier");
                                 }
                             }
                         }
