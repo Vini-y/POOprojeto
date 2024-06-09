@@ -1,9 +1,10 @@
 package DAO;
 
-import java.sql.Connection;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
 import Utils.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminDAO {
 
@@ -13,16 +14,14 @@ public class AdminDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
 
-            if (conn != null) {
-                stmt.setString(1, name);
-                stmt.setString(2, email);
-                stmt.setString(3, senha);
+            stmt.setString(1, name);
+            stmt.setString(2, email);
+            stmt.setString(3, senha);
 
-                stmt.executeUpdate();
-            } else {
-                System.out.println("Erro ao conectar ao banco de dados.");
-            }
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }
-

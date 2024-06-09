@@ -2,21 +2,24 @@ package Models;
 
 import java.util.Date;
 
+
 public class Person {
-    private int id_person;
     private String last_name;
     private String cpf;
     private Date birth_date;
     private String phone_number;
     private Date registration_date;
-    private Address address;  // Referência ao objeto Address
+    private Address address;
+    private User user;
 
-    public int getId_person() {
-        return id_person;
-    }
-
-    public void setId_person(int id_person) {
-        this.id_person = id_person;
+    // Construtor
+    public Person(String last_name, String cpf, Date birth_date, String phone_number, Address address, User user) {
+        this.last_name = last_name;
+        this.cpf = cpf;
+        this.birth_date = birth_date;
+        this.phone_number = phone_number;
+        this.address = address;
+        this.user = user;
     }
 
     public String getLast_name() {
@@ -65,5 +68,13 @@ public class Person {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -1,19 +1,28 @@
 package Models;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Sale {
     private int id_sale;
-    private Client client;  // Referência ao objeto Client
-    private Seller seller;  // Referência ao objeto Seller
+    private Client client; // Referência ao cliente
+    private Seller seller; // Referência ao vendedor
     private Date sale_date;
-    private ArrayList <SaleItens> itens;
-    private Pay payment;  // Referência ao objeto Pay
+    private Payment payment; // Referência ao tipo de pagamento
     private float total_value;
     private int parcelas;
 
+    // Construtor
+    public Sale(int id_sale, Client client, Seller seller, Date sale_date, Payment payment, float total_value, int parcelas) {
+        this.id_sale = id_sale;
+        this.client = client;
+        this.seller = seller;
+        this.sale_date = sale_date;
+        this.payment = payment;
+        this.total_value = total_value;
+        this.parcelas = parcelas;
+    }
+
+    // Getters e Setters
     public int getId_sale() {
         return id_sale;
     }
@@ -46,19 +55,11 @@ public class Sale {
         this.sale_date = sale_date;
     }
 
-    public ArrayList<SaleItens> getItens() {
-        return itens;
-    }
-
-    public void setItens(ArrayList<SaleItens> itens) {
-        this.itens = itens;
-    }
-
-    public Pay getPayment() {
+    public Payment getPayment() {
         return payment;
     }
 
-    public void setPayment(Pay payment) {
+    public void setPayment(Payment payment) {
         this.payment = payment;
     }
 

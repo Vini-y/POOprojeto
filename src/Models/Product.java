@@ -1,14 +1,22 @@
 package Models;
 
-import java.math.BigDecimal;
-
 public class Product {
     private int id_product;
     private String description;
     private int quantity;
     private float price;
-    private Supplier supplier;  // Referência ao objeto Supplier
+    private Supplier supplier; // Referência ao objeto Supplier
 
+    // Construtor
+    public Product(int id_product, String description, int quantity, float price, Supplier supplier) {
+        this.id_product = id_product;
+        this.description = description;
+        this.quantity = quantity;
+        this.price = price;
+        this.supplier = supplier;
+    }
+
+    // Getters e Setters
     public int getId_product() {
         return id_product;
     }
@@ -49,4 +57,3 @@ public class Product {
         this.supplier = supplier;
     }
 }
-

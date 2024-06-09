@@ -1,130 +1,125 @@
 package DAO;
 
-import java.sql.*;
-
+import Models.Address;
+import Models.Person;
+import Models.Seller;
+import Models.User;
 import Utils.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SellerDAO {
 
-    public void insertSeller(String name, String email, String senha, String lastName, String cpf,
-                             Date birthDate, String phoneNumber,
-                             String city, String state, String country, String address,
-                             String addressNumber) throws SQLException {
+    public void insertSeller(Seller seller) throws SQLException {
         String sql = "{CALL insert_seller(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setString(1, name);
-            stmt.setString(2, email);
-            stmt.setString(3, senha);
-            stmt.setString(4, lastName);
-            stmt.setString(5, cpf);
-            stmt.setDate(6, birthDate);
-            stmt.setString(7, phoneNumber);
-            // Removido o parâmetro de registro
-            stmt.setString(8, city);
-            stmt.setString(9, state);
-            stmt.setString(10, country);
-            stmt.setString(11, address);
-            stmt.setString(12, addressNumber);
+            Person person = seller.getPerson();
+            stmt.setString(1, person.getUser().getName());
+            stmt.setString(2, person.getUser().getEmail());
+            stmt.setString(3, person.getUser().getSenha());
+            stmt.setString(4, person.getLast_name());
+            stmt.setString(5, person.getCpf());
+            stmt.setDate(6, new java.sql.Date(person.getBirth_date().getTime()));
+            stmt.setString(7, person.getPhone_number());
+            stmt.setString(8, person.getAddress().getCity());
+            stmt.setString(9, person.getAddress().getState());
+            stmt.setString(10, person.getAddress().getCountry());
+            stmt.setString(11, person.getAddress().getAddress());
+            stmt.setString(12, person.getAddress().getAddress_number());
 
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
-    public void updateSeller(int id_selecionado, String name, String email, String senha, String lastName, String cpf,
-                             Date birthDate, String phoneNumber,
-                             String city, String state, String country, String address,
-                             String addressNumber)throws SQLException {
+    public void updateSeller(Seller seller) throws SQLException {
         String sql = "{CALL update_seller(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
 
-            if (conn != null) {
-                stmt.setInt(1, id_selecionado);
-                stmt.setString(2, name);
-                stmt.setString(3, email);
-                stmt.setString(4, senha);
-                stmt.setString(5, lastName);
-                stmt.setString(6, cpf);
-                stmt.setDate(7, birthDate);
-                stmt.setString(8, phoneNumber);
-                stmt.setString(9, city);
-                stmt.setString(10, state);
-                stmt.setString(11, country);
-                stmt.setString(12, address);
-                stmt.setString(13, addressNumber);
+            Person person = seller.getPerson();
+            stmt.setInt(1, person.getUser().getId_user());
+            stmt.setString(2, person.getUser().getName());
+            stmt.setString(3, person.getUser().getEmail());
+            stmt.setString(4, person.getUser().getSenha());
+            stmt.setString(5, person.getLast_name());
+            stmt.setString(6, person.getCpf());
+            stmt.setDate(7, new java.sql.Date(person.getBirth_date().getTime()));
+            stmt.setString(8, person.getPhone_number());
+            stmt.setString(9, person.getAddress().getCity());
+            stmt.setString(10, person.getAddress().getState());
+            stmt.setString(11, person.getAddress().getCountry());
+            stmt.setString(12, person.getAddress().getAddress());
+            stmt.setString(13, person.getAddress().getAddress_number());
 
-
-                stmt.executeUpdate();
-            } else {
-                System.out.println("Erro ao conectar ao banco de dados.");
-            }
-
-
-
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
-    public static void selectSeller() {
-        String query = "SELECT s.id_seller, u.name, p.last_name, p.cpf, p.birth_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number, u.email " +
+    public List<Seller> getAllSellers() {
+        List<Seller> sellers = new ArrayList<>();
+        String sql = "SELECT s.id_seller, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number " +
                 "FROM Seller s " +
                 "JOIN Person p ON s.id_seller = p.id_person " +
                 "JOIN Address a ON p.address_id = a.id_address " +
                 "JOIN User u ON p.id_person = u.id_user";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                int idVendedor = rs.getInt("id_seller");
-                String nome = rs.getString("name");
-                String sobrenome = rs.getString("last_name");
-                String cpf = rs.getString("cpf");
-                String dataNascimento = rs.getString("birth_date");
-                String telefone = rs.getString("phone_number");
-                String cidade = rs.getString("city");
-                String estado = rs.getString("state");
-                String pais = rs.getString("country");
-                String endereco = rs.getString("address");
-                String numeroEndereco = rs.getString("address_number");
+                int id_user = rs.getInt("id_seller");
+                String name = rs.getString("name");
                 String email = rs.getString("email");
+                String senha = rs.getString("senha");
+                String last_name = rs.getString("last_name");
+                String cpf = rs.getString("cpf");
+                Date birth_date = rs.getDate("birth_date");
+                String phone_number = rs.getString("phone_number");
+                String city = rs.getString("city");
+                String state = rs.getString("state");
+                String country = rs.getString("country");
+                String address = rs.getString("address");
+                String address_number = rs.getString("address_number");
 
-                System.out.println("ID do Vendedor: " + idVendedor);
-                System.out.println("Nome: " + nome + " " + sobrenome);
-                System.out.println("CPF: " + cpf);
-                System.out.println("Data de Nascimento: " + dataNascimento);
-                System.out.println("Telefone: " + telefone);
-                System.out.println("Endereço: " + endereco + ", " + numeroEndereco + ", " + cidade + ", " + estado + ", " + pais);
-                System.out.println("Email: " + email);
-                System.out.println("----------------------------------");
+                User user = new User(id_user, name, email, senha);
+                Address addr = new Address(city, state, country, address, address_number);
+                Person person = new Person(last_name, cpf, birth_date, phone_number, addr, user);
+
+                sellers.add(new Seller(person));
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao listar vendedores: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        return sellers;
     }
 
-    public static void removeSeller(int sellerId) throws SQLException {
+    public void deleteSeller(int id_user) throws SQLException {
         String sql = "{CALL delete_seller(?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setInt(1, sellerId);
-
+            stmt.setInt(1, id_user);
             stmt.executeUpdate();
 
             System.out.println("Vendedor deletado com sucesso!");
         } catch (SQLException e) {
-            System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
     }
-
-
 }
-
-

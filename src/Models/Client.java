@@ -1,17 +1,14 @@
 package Models;
 
 public class Client {
-    private int id_client;
-    private Person person;  // Referência ao objeto Person
+    private Person person; // Referência ao objeto Person
 
-    public int getId_client() {
-        return id_client;
+    // Construtor
+    public Client(Person person) {
+        this.person = person;
     }
 
-    public void setId_client(int id_client) {
-        this.id_client = id_client;
-    }
-
+    // Getter e Setter
     public Person getPerson() {
         return person;
     }
