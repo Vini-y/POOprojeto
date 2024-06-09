@@ -47,7 +47,7 @@ public class PersonDAO {
                 Date registration_date = resultSet.getDate("registration_date");
                 int address_id = resultSet.getInt("address_id");
                 Address address = getAddressById(address_id);
-                User user = getUserById(id_person); // Aqui usamos o id_person como id_user
+                User user = UserDAO.getUserById(id_person); // Aqui usamos o id_person como id_user
                 persons.add(new Person(last_name, cpf, birth_date, phone_number, address, user));
             }
         }
@@ -67,7 +67,7 @@ public class PersonDAO {
                     Date registration_date = resultSet.getDate("registration_date");
                     int address_id = resultSet.getInt("address_id");
                     Address address = getAddressById(address_id);
-                    User user = getUserById(id); // Aqui usamos o id_person como id_user
+                    User user = UserDAO.getUserById(id); // Aqui usamos o id_person como id_user
                     return new Person(last_name, cpf, birth_date, phone_number, address, user);
                 }
             }
@@ -133,7 +133,6 @@ public class PersonDAO {
         }
         return null;
     }
-
 
 
 }
