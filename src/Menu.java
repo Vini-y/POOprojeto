@@ -152,19 +152,15 @@ public class Menu {
                         editarProduto(supplierDAO);
                         break;
                     case "Deletar Vendedor":
-                        listarVendedores(sellerDAO);
                         deletarVendedor(sellerDAO, scanner);
                         break;
                     case "Deletar Cliente":
-                        listarClientes(clientDAO);
                         deletarCliente(clientDAO, scanner);
                         break;
                     case "Deletar Fornecedor":
-                        listarFornecedores(supplierDAO);
                         deletarFornecedor(supplierDAO, scanner);
                         break;
                     case "Deletar Produto":
-                        listarProdutos(productDAO);
                         deletarProduto(productDAO, scanner);
                         break;
                     case "Registrar Venda":
@@ -410,20 +406,27 @@ public class Menu {
     public static void listarVendedores(SellerDAO sellerDAO) {
         List<Seller> sellers = sellerDAO.getAllSellers();
 
-        for (Seller seller : sellers) {
-            System.out.println("ID: " + seller.getPerson().getUser().getId_user());
-            System.out.println("Name: " + seller.getPerson().getUser().getName());
-            System.out.println("Email: " + seller.getPerson().getUser().getEmail());
-            System.out.println("Last Name: " + seller.getPerson().getLast_name());
-            System.out.println("CPF: " + seller.getPerson().getCpf());
-            System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
-            System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
-            System.out.println("City: " + seller.getPerson().getAddress().getCity());
-            System.out.println("State: " + seller.getPerson().getAddress().getState());
-            System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
-            System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
-            System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
-            System.out.println("-----------------------");
+        if (sellers.isEmpty()){
+            System.out.println("Não há vendedores cadastrados.");
+        }
+
+        else {
+            System.out.println("Lista de vendedores: ");
+            for (Seller seller : sellers) {
+                System.out.println("ID: " + seller.getPerson().getUser().getId_user());
+                System.out.println("Name: " + seller.getPerson().getUser().getName());
+                System.out.println("Email: " + seller.getPerson().getUser().getEmail());
+                System.out.println("Last Name: " + seller.getPerson().getLast_name());
+                System.out.println("CPF: " + seller.getPerson().getCpf());
+                System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
+                System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
+                System.out.println("City: " + seller.getPerson().getAddress().getCity());
+                System.out.println("State: " + seller.getPerson().getAddress().getState());
+                System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
+                System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
+                System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
+                System.out.println("-----------------------");
+            }
         }
     }
 
@@ -733,44 +736,74 @@ public class Menu {
 
 
     public static void deletarVendedor(SellerDAO sellerDAO, Scanner scanner) {
-        System.out.print("Digite o ID do vendedor que deseja deletar: ");
-        int idVendedor = scanner.nextInt();
-        try {
-            sellerDAO.deleteSeller(idVendedor);
-            System.out.println("Vendedor deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+        List<Seller> sellers = sellerDAO.getAllSellers();
+
+        if (sellers.isEmpty()) {
+            System.out.println("Não há vendedores cadastrados.");
+        }
+        else {
+            listarVendedores(sellerDAO);
+            System.out.print("Digite o ID do vendedor que deseja deletar: ");
+            int idVendedor = scanner.nextInt();
+            try {
+                sellerDAO.deleteSeller(idVendedor);
+                System.out.println("Vendedor deletado com sucesso!");
+            } catch (SQLException e) {
+                System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+            }
         }
     }
 
     public static void deletarCliente(ClientDAO clientDAO, Scanner scanner) {
-        System.out.print("Digite o ID do cliente que deseja deletar: ");
-        int idCliente = scanner.nextInt();
-        try {
-            clientDAO.deleteClient(idCliente);
-            System.out.println("Cliente deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar cliente: " + e.getMessage());
-        }
+        List<Client> clients = clientDAO.getAllClients();
+
+        if (clients.isEmpty()) {
+            System.out.println("Não há clientes cadastrados.");
+            }
+        else{
+                listarClientes(clientDAO);
+                System.out.print("Digite o ID do cliente que deseja deletar: ");
+                int idCliente = scanner.nextInt();
+                try {
+                    clientDAO.deleteClient(idCliente);
+                    System.out.println("Cliente deletado com sucesso!");
+                } catch (SQLException e) {
+                    System.out.println("Erro ao deletar cliente: " + e.getMessage());
+                }
+            }
     }
 
     public static void deletarFornecedor(SupplierDAO supplierDAO, Scanner scanner) {
-        System.out.print("Digite o ID do fornecedor que deseja deletar: ");
-        int idFornecedor = scanner.nextInt();
-        try {
-            supplierDAO.deleteSupplier(idFornecedor);
-            System.out.println("Fornecedor deletado com sucesso!");
-        } catch (SQLException e) {
-            System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
+        List<Supplier> suppliers = supplierDAO.getAllSuppliers();
+
+        if (suppliers.isEmpty()) {
+            System.out.println("Não há fornecedores cadastrados.");
+        }
+
+        else {
+            listarFornecedores(supplierDAO);
+            System.out.print("Digite o ID do fornecedor que deseja deletar: ");
+            int idFornecedor = scanner.nextInt();
+            try {
+                supplierDAO.deleteSupplier(idFornecedor);
+                System.out.println("Fornecedor deletado com sucesso!");
+            } catch (SQLException e) {
+                System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
+            }
         }
     }
 
     public static void deletarProduto(ProductDAO productDAO, Scanner scanner) {
-        System.out.print("Digite o ID do produto que deseja deletar: ");
-        int idProduto = scanner.nextInt();
-        productDAO.deleteProduct(idProduto);
-        System.out.println("Produto deletado com sucesso!");
+        List<Product> products = productDAO.getAllProducts();
+
+        if (products.isEmpty()) {
+            System.out.println("Não há produtos cadastrados.");
+        } else {
+            listarProdutos(productDAO);
+            System.out.print("Digite o ID do produto que deseja deletar: ");
+            int idProduto = scanner.nextInt();
+            productDAO.deleteProduct(idProduto);
+            System.out.println("Produto deletado com sucesso!");
+        }
     }
-
-
 }
