@@ -156,18 +156,23 @@ BEGIN
 END //
 
 -- Procedure para inserir vendas na tabela Sale
-CREATE PROCEDURE insert_sale(
-    IN p_id_client INT,
-    IN p_id_seller INT,
-    IN p_sale_date DATETIME,
-    IN p_payment INT,
-    IN p_total_value FLOAT,
-    IN p_parcelas INT
+DROP PROCEDURE IF EXISTS insert_sale;
+CREATE PROCEDURE insert_sale (
+    IN client_id INT,
+    IN seller_id INT,
+    IN sale_date TIMESTAMP,
+    IN payment_id INT,
+    IN total_value FLOAT,
+    IN parcelas INT,
+    OUT last_insert_id INT
 )
 BEGIN
     INSERT INTO Sale (id_client, id_seller, sale_date, payment, total_value, parcelas)
-    VALUES (p_id_client, p_id_seller, p_sale_date, p_payment, p_total_value, p_parcelas);
+    VALUES (client_id, seller_id, sale_date, payment_id, total_value, parcelas);
+
+    SET last_insert_id = LAST_INSERT_ID();
 END //
+
 
 -- Procedure para inserir itens de venda na tabela Sale_itens
 CREATE PROCEDURE insert_sale_item(
