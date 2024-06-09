@@ -9,15 +9,21 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        try {
-            DatabaseConnection.getConnection();
-
-            UserLoginInfo user = login();
-            Menu menu = new Menu(user.getUserId(), user.getUserType());
-            menu.exibirMenu();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());
+        UserLoginInfo user = null;
+        while (user == null) {
+            try {
+                DatabaseConnection.getConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());
+            }
+            try {
+                user = login();
+                Menu menu = new Menu(user.getUserId(), user.getUserType());
+                menu.exibirMenu();
+            } catch (Exception e) {
+                System.out.println("Usuário não cadastrado");
+            }
         }
     }
 
