@@ -10,7 +10,7 @@ public class DatabaseConnection {
     public static Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/thorffin_wears", "root", "PUC@1234");
+                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/thorffin_wears", "root", "pepsiSQL@123");
             }
         } catch (SQLException e) {
             System.out.println("Erro ao conectar ao banco de dados: " + e.getMessage());

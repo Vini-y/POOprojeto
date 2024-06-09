@@ -13,26 +13,35 @@ import java.sql.Timestamp;
 
 public class SaleDAO {
 
-    public void insertSale(Sale sale) {
+    public int insertSale(Sale sale) {
         String sql = "{CALL insert_sale(?, ?, ?, ?, ?, ?)}";
+        int lastInsertId = -1;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, sale.getClient().getPerson().getUser().getId_user());
             stmt.setInt(2, sale.getSeller().getPerson().getUser().getId_user());
-            stmt.setTimestamp(3, (Timestamp) sale.getSale_date());
+            stmt.setTimestamp(3, sale.getSale_date());
             stmt.setInt(4, sale.getPayment().getId_pay());
             stmt.setFloat(5, sale.getTotal_value());
             stmt.setInt(6, sale.getParcelas());
 
             stmt.executeUpdate();
 
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    lastInsertId = rs.getInt(1);
+                }
+            }
+
             System.out.println("Venda inserida com sucesso!");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return lastInsertId;
     }
 
     public static void getSaleItems(int saleId) {

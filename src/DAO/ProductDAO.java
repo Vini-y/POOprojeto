@@ -98,6 +98,54 @@ public class ProductDAO {
         return products;
     }
 
+    public Product getProductById(int productId) {
+        String query = "SELECT pr.id_product, pr.description, pr.quantity, pr.price, " +
+                "su.name AS supplier_name, su.cnpj, " +
+                "a.city, a.state, a.country, a.address, a.address_number, " +
+                "u.id_user, u.name AS user_name, u.email, u.senha " +
+                "FROM Product pr " +
+                "INNER JOIN Supplier su ON pr.id_supplier = su.id_supplier " +
+                "INNER JOIN Address a ON su.address_id = a.id_address " +
+                "INNER JOIN User u ON su.id_supplier = u.id_user " +
+                "WHERE pr.id_product = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, productId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String description = rs.getString("description");
+                    int quantity = rs.getInt("quantity");
+                    float price = rs.getFloat("price");
+                    String supplierName = rs.getString("supplier_name");
+                    String cnpj = rs.getString("cnpj");
+                    String city = rs.getString("city");
+                    String state = rs.getString("state");
+                    String country = rs.getString("country");
+                    String address = rs.getString("address");
+                    String addressNumber = rs.getString("address_number");
+                    int userId = rs.getInt("id_user");
+                    String userName = rs.getString("user_name");
+                    String email = rs.getString("email");
+                    String senha = rs.getString("senha");
+
+                    Address supplierAddress = new Address(city, state, country, address, addressNumber);
+                    User supplierUser = new User(userName, email, senha);
+                    Supplier supplier = new Supplier(supplierName, cnpj, supplierAddress, supplierUser);
+
+                    return new Product(description, quantity, price, supplier);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     public static void deleteProduct(int productId) {
         String sql = "{CALL delete_product(?)}";
 

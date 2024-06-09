@@ -1,4 +1,6 @@
 import DAO.LoginDAO;
+import Models.User;
+import Models.UserLoginInfo;
 import Utils.DatabaseConnection;
 
 import java.sql.SQLException;
@@ -10,8 +12,8 @@ public class Main {
         try {
             DatabaseConnection.getConnection();
 
-            String user = login();
-            Menu menu = new Menu(user);
+            UserLoginInfo user = login();
+            Menu menu = new Menu(user.getUserId(), user.getUserType());
             menu.exibirMenu();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -19,7 +21,7 @@ public class Main {
         }
     }
 
-    public static String login() throws SQLException {
+    public static UserLoginInfo login() throws SQLException {
         LoginDAO loginDAO = new LoginDAO();
 
         Scanner sc = new Scanner(System.in);
@@ -30,8 +32,8 @@ public class Main {
         System.out.printf("\nPassword: ");
         String password = sc.nextLine();
 
-        String userType = loginDAO.login(email, password);
+        UserLoginInfo userInfo = loginDAO.login(email, password);
 
-        return userType;
+        return userInfo;
     }
 }

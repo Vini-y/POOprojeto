@@ -4,6 +4,7 @@ import Utils.DatabaseConnection;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -16,18 +17,26 @@ public class Menu {
     private SellerDAO sellerDAO;
     private SupplierDAO supplierDAO;
     private ProductDAO productDAO;
+    private SaleDAO saleDAO;
+    private PayDAO payDAO;
+    private SaleItemDAO saleItemDAO;
     private String clienteTipo;
+    private int clienteId;
 
 
-    public Menu(String clienteTipo) {
+    public Menu(int clienteId, String clienteTipo) {
         scanner = new Scanner(System.in);
         clientDAO = new ClientDAO();
         adminDAO = new AdminDAO();
         sellerDAO = new SellerDAO();
         supplierDAO = new SupplierDAO();
         productDAO = new ProductDAO();
+        saleDAO = new SaleDAO();
+        payDAO = new PayDAO();
+        saleItemDAO = new SaleItemDAO();
 
         this.clienteTipo = clienteTipo;
+        this.clienteId = clienteId;
     }
 
     private ArrayList<String> filtrarOpcoes() {
@@ -79,6 +88,12 @@ public class Menu {
                 if ((o.contains("Sair"))) {
                     filteredOpcoes.add(o);
                 }
+                /*
+            } else if (clienteTipo.equals("Admin")){
+                if (!(o.contains("Registrar Venda"))) {
+                    filteredOpcoes.add(o);
+                }
+                */
             } else {
                 filteredOpcoes.add(o);
             }
@@ -168,7 +183,7 @@ public class Menu {
                         deletarProduto(productDAO, scanner);
                         break;
                     case "Registrar Venda":
-
+                        registarVenda(scanner);
                         break;
                     case "Listar Vendas":
                         SaleDAO.listarVendas();
@@ -795,6 +810,89 @@ public class Menu {
         int idProduto = scanner.nextInt();
         productDAO.deleteProduct(idProduto);
         System.out.println("Produto deletado com sucesso!");
+    }
+
+    private void registarVenda(Scanner scanner) {
+        /*
+        Somente vendedor pode registrar uma venda. Dados: Cliente (Cliente); itens (ArrayList<Produto, qtde>);
+        tipoPagamento (crédito, débito ou dinheiro);
+         */
+
+        System.out.println("\nRegistrar uma venda\n===================");
+
+        System.out.print("\nId do cliente: ");
+        int idCliente = scanner.nextInt();
+
+        System.out.print("\nTipo de pagamento: \n(1) Dinheiro\n(2) Débito\n(3) Crédito\n> ");
+        int tipoPagamento = scanner.nextInt();
+
+        listarProdutos(productDAO);
+        ArrayList<Product> itens = new ArrayList<>();
+        ArrayList<Integer> qtde = new ArrayList<>();
+
+        int entrada = 0;
+        while (entrada != 2) {
+            System.out.println("(1) Adicionar um produto");
+            System.out.println("(2) Finalizar venda");
+
+            System.out.print("> ");
+            entrada = scanner.nextInt();
+
+            switch (entrada) {
+
+                case 1:
+                    System.out.print("Digite o id do produto que gostaria de adicionar: ");
+                    int newIdProduto = scanner.nextInt();
+                    System.out.print("Digite a quantidade: ");
+                    int quantidadeProduto = scanner.nextInt();
+
+                    itens.add(productDAO.getProductById(newIdProduto));
+                    qtde.add(quantidadeProduto);
+                    break;
+                case 2:
+                    System.out.println("Finalizando a venda...");
+                    break;
+                default:
+                    System.out.println("Entrada inválida!");
+                    break;
+            }
+        }
+
+        Client client = clientDAO.getClientById(idCliente);
+        Payment payment = payDAO.getPaymentById(tipoPagamento);
+        Seller seller = sellerDAO.getSellerById(clienteId);
+
+        float precoTotal = 0;
+
+        for (int i = 0; i < itens.size(); i++) {
+            precoTotal += itens.get(i).getPrice() * qtde.get(i);
+        }
+
+        int parcelas = 1;
+        if (tipoPagamento == 3 && precoTotal >= 1000){
+            System.out.println("Crédito\n=======\nParcelas em até 5x sem juros.\nJuros de 5% para parcelas acima de 5x.\n");
+            System.out.println("\nNúmero de parcelas (1 para ignorar): ");
+            parcelas = scanner.nextInt();
+        }
+
+        System.out.println(client.getPerson().getUser().getId_user());
+
+        Sale sale = new Sale(0, client, seller, new Timestamp(2024), payment, precoTotal, parcelas);
+
+        int sale_id = saleDAO.insertSale(sale);
+
+        sale.setId_sale(sale_id);
+
+        try {
+            for (int i = 0; i < itens.size(); i++) {
+                SaleItem saleItem = new SaleItem(sale_id, sale, itens.get(i), qtde.get(i), itens.get(i).getPrice());
+                saleItemDAO.insertSaleItem(saleItem);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+
     }
 
 
