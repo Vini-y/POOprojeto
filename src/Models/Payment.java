@@ -1,3 +1,5 @@
+package Models;
+
 public class Payment {
     private int id_pay;
     private String type;

@@ -1,17 +1,14 @@
 package Models;
 
 public class Seller {
-    private int id_seller;
-    private Person person;  // Referência ao objeto Person
+    private Person person; // Referência ao objeto Person
 
-    public int getId_seller() {
-        return id_seller;
+    // Construtor
+    public Seller(Person person) {
+        this.person = person;
     }
 
-    public void setId_seller(int id_seller) {
-        this.id_seller = id_seller;
-    }
-
+    // Getter e Setter
     public Person getPerson() {
         return person;
     }

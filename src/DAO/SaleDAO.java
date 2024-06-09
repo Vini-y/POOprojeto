@@ -1,31 +1,41 @@
 package DAO;
 
 import Utils.DatabaseConnection;
+import Models.Sale;
+import Models.Payment;
+import Models.Product;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class SaleDAO {
 
-    public void insertSale(int idClient, int idSeller, Timestamp saleDate, int payment, float totalValue, int parcelas) throws SQLException {
+    public void insertSale(Sale sale) {
         String sql = "{CALL insert_sale(?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             CallableStatement stmt = conn.prepareCall(sql)) {
+             PreparedStatement stmt = conn.prepareCall(sql)) {
 
-            stmt.setInt(1, idClient);
-            stmt.setInt(2, idSeller);
-            stmt.setTimestamp(3, saleDate);
-            stmt.setInt(4, payment);
-            stmt.setFloat(5, totalValue);
-            stmt.setInt(6, parcelas);
+            stmt.setInt(1, sale.getClient().getPerson().getUser().getId_user());
+            stmt.setInt(2, sale.getSeller().getPerson().getUser().getId_user());
+            stmt.setTimestamp(3, (Timestamp) sale.getSale_date());
+            stmt.setInt(4, sale.getPayment().getId_pay());
+            stmt.setFloat(5, sale.getTotal_value());
+            stmt.setInt(6, sale.getParcelas());
 
             stmt.executeUpdate();
+
+            System.out.println("Venda inserida com sucesso!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public static void getSale_Itens(int saleId) {
+    public static void getSaleItems(int saleId) {
         String query = "SELECT si.product_id, p.description AS product_name, si.quantity " +
                 "FROM Sale s " +
                 "JOIN Sale_itens si ON s.id_sale = si.sale_id " +
@@ -52,7 +62,6 @@ public class SaleDAO {
             e.printStackTrace();
         }
     }
-
 
     public static void listarVendas() {
         String sql = "SELECT s.id_sale, uc.name AS client_name, us.name AS seller_name, s.sale_date, p.tipo AS payment_type, " +
@@ -95,12 +104,11 @@ public class SaleDAO {
         }
     }
 
-
     public static void fechamentoDoDia() {
         String sql = "{CALL fechamento_do_dia()}";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             CallableStatement stmt = conn.prepareCall(sql)) {
+             PreparedStatement stmt = conn.prepareCall(sql)) {
 
             // Executar a procedure
             boolean hasResults = stmt.execute();
@@ -145,7 +153,5 @@ public class SaleDAO {
             System.out.println("Erro ao executar o fechamento do dia: " + e.getMessage());
         }
     }
-
-
 }
 

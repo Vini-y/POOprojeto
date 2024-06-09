@@ -6,6 +6,12 @@ public class User {
     private String email;
     private String senha;
 
+    public User( String name, String email, String senha) {
+        this.name = name;
+        this.email = email;
+        this.senha = senha;
+    }
+
     public int getId_user() {
         return id_user;
     }

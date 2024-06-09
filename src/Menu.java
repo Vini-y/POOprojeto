@@ -1,5 +1,5 @@
 import DAO.*;
-import Models.Product;
+import Models.*;
 import Utils.DatabaseConnection;
 
 import java.sql.Date;
@@ -128,16 +128,16 @@ public class Menu {
                         inserirProduto();
                         break;
                     case "Listar Vendedor":
-                        SellerDAO.selectSeller();
+                        listarVendedores(sellerDAO);
                         break;
                     case "Listar Cliente":
-                        ClientDAO.selectClient();
+                        listarClientes(clientDAO);
                         break;
                     case "Listar Fornecedor":
-                        SupplierDAO.selectSupplier();
+                        listarFornecedores(supplierDAO);
                         break;
                     case "Listar Produto":
-                        ProductDAO.selectProduct();
+                        listarProdutos(productDAO);
                         break;
                     case "Editar Vendedor":
                         editarVendedor();
@@ -149,35 +149,23 @@ public class Menu {
                         editarFornecedor();
                         break;
                     case "Editar Produto":
-                        editarProduto();
+                        editarProduto(supplierDAO);
                         break;
                     case "Deletar Vendedor":
-                        SellerDAO.selectSeller();
-                        System.out.println("Selecione o ID do Vendedor para deletar: ");
-                        int idSeller = scanner.nextInt();
-                        scanner.nextLine();
-                        SellerDAO.removeSeller(idSeller);
+                        listarVendedores(sellerDAO);
+                        deletarVendedor(sellerDAO, scanner);
                         break;
                     case "Deletar Cliente":
-                        ClientDAO.selectClient();
-                        System.out.println("Selecione o ID do Cliente para deletar: ");
-                        int idClient = scanner.nextInt();
-                        scanner.nextLine();
-                        ClientDAO.deleteClient(idClient);
+                        listarClientes(clientDAO);
+                        deletarCliente(clientDAO, scanner);
                         break;
                     case "Deletar Fornecedor":
-                        SupplierDAO.selectSupplier();
-                        System.out.println("Selecione o ID do Fornecedor para deletar: ");
-                        int idSupplier = scanner.nextInt();
-                        scanner.nextLine();
-                        SupplierDAO.deleteSupplier(idSupplier);
+                        listarFornecedores(supplierDAO);
+                        deletarFornecedor(supplierDAO, scanner);
                         break;
                     case "Deletar Produto":
-                        ProductDAO.selectProduct();
-                        System.out.println("Selecione o ID do Produto para deletar: ");
-                        int idProduct = scanner.nextInt();
-                        scanner.nextLine();
-                        ProductDAO.deleteProduct(idProduct);
+                        listarProdutos(productDAO);
+                        deletarProduto(productDAO, scanner);
                         break;
                     case "Registrar Venda":
 
@@ -243,7 +231,20 @@ public class Menu {
             System.out.print("Número do endereço: ");
             String addressNumber = scanner.nextLine();
 
-            clientDAO.insertClient(name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+            // Criando o objeto Address
+            Address clientAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criando o objeto User
+            User user = new User(name, email, senha);
+
+            // Criando o objeto Person
+            Person person = new Person(lastName, cpf, birthDate, phoneNumber, clientAddress, user);
+
+            // Criando o objeto Client
+            Client client = new Client(person);
+
+            // Inserindo o cliente
+            clientDAO.insertClient(client);
 
             System.out.println("Cliente inserido com sucesso!");
         } catch (Exception e) {
@@ -311,7 +312,20 @@ public class Menu {
             System.out.print("Número do endereço: ");
             String addressNumber = scanner.nextLine();
 
-            sellerDAO.insertSeller(name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+            // Criando o objeto Address
+            Address sellerAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criando o objeto User
+            User user = new User(name, email, senha);
+
+            // Criando o objeto Person
+            Person person = new Person(lastName, cpf, birthDate, phoneNumber, sellerAddress, user);
+
+            // Criando o objeto Seller
+            Seller seller = new Seller(person);
+
+            // Inserindo o vendedor
+            sellerDAO.insertSeller(seller);
 
             System.out.println("Vendedor inserido com sucesso!");
         } catch (Exception e) {
@@ -319,6 +333,7 @@ public class Menu {
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
+
 
 
     private void inserirFornecedor() {
@@ -350,7 +365,17 @@ public class Menu {
             System.out.print("Número do endereço: ");
             String addressNumber = scanner.nextLine();
 
-            supplierDAO.insertSupplier(name, email, senha, cnpj, city, state, country, address, addressNumber);
+            // Criando o objeto Address
+            Address supplierAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criando o objeto User
+            User user = new User(name, email, senha);
+
+            // Criando o objeto Supplier
+            Supplier supplier = new Supplier(name, cnpj, supplierAddress, user);
+
+            // Inserindo o fornecedor
+            supplierDAO.insertSupplier(supplier);
 
             System.out.println("Fornecedor inserido com sucesso!");
         } catch (Exception e) {
@@ -359,38 +384,149 @@ public class Menu {
         }
     }
 
+
     private void inserirProduto() {
         try {
+            Scanner scanner = new Scanner(System.in);
+
             System.out.print("Descrição: ");
             String description = scanner.nextLine();
 
             System.out.print("Quantidade: ");
-            int quantity = Integer.parseInt(scanner.nextLine());
+            int quantity = scanner.nextInt();
+            scanner.nextLine(); // Consumir a quebra de linha após o nextInt()
 
             System.out.print("Preço: ");
-            float price = Float.parseFloat(scanner.nextLine());
+            float price = scanner.nextFloat();
+            scanner.nextLine(); // Consumir a quebra de linha após o nextFloat()
 
-            SupplierDAO.selectSupplier();
+            // Listar fornecedores disponíveis antes de solicitar o ID do fornecedor
+            listarFornecedores(supplierDAO);
+
             System.out.print("ID do fornecedor: ");
-            int idSupplier = Integer.parseInt(scanner.nextLine());
+            int idSupplier = scanner.nextInt();
 
-            productDAO.insertProduct(description, quantity, price, idSupplier);
+            // Buscar o Supplier com o ID fornecido pelo usuário
+            Supplier supplier = supplierDAO.getSupplierById(idSupplier);
 
-            System.out.println("Produto inserido com sucesso!");
+            if (supplier != null) {
+                // Criar um objeto Product com os dados inseridos pelo usuário e o Supplier obtido
+                Product product = new Product(description, quantity, price, supplier);
+
+                // Inserir o produto
+                productDAO.insertProduct(product);
+
+                System.out.println("Produto inserido com sucesso!");
+            } else {
+                System.out.println("Fornecedor com o ID fornecido não encontrado.");
+            }
+
+            scanner.close(); // Fechar o scanner após o uso
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao inserir produto: " + e.getMessage());
         }
     }
 
+
+
+
+
+    public static void listarVendedores(SellerDAO sellerDAO) {
+        List<Seller> sellers = sellerDAO.getAllSellers();
+
+        for (Seller seller : sellers) {
+            System.out.println("ID: " + seller.getPerson().getUser().getId_user());
+            System.out.println("Name: " + seller.getPerson().getUser().getName());
+            System.out.println("Email: " + seller.getPerson().getUser().getEmail());
+            System.out.println("Last Name: " + seller.getPerson().getLast_name());
+            System.out.println("CPF: " + seller.getPerson().getCpf());
+            System.out.println("Birth Date: " + seller.getPerson().getBirth_date());
+            System.out.println("Phone Number: " + seller.getPerson().getPhone_number());
+            System.out.println("City: " + seller.getPerson().getAddress().getCity());
+            System.out.println("State: " + seller.getPerson().getAddress().getState());
+            System.out.println("Country: " + seller.getPerson().getAddress().getCountry());
+            System.out.println("Address: " + seller.getPerson().getAddress().getAddress());
+            System.out.println("Address Number: " + seller.getPerson().getAddress().getAddress_number());
+            System.out.println("-----------------------");
+        }
+    }
+
+
+    public static void listarClientes(ClientDAO clientDAO) {
+        List<Client> clients = clientDAO.getAllClients();
+
+        if (clients.isEmpty()) {
+            System.out.println("Não há clientes cadastrados.");
+        } else {
+            System.out.println("Lista de Clientes:");
+            for (Client client : clients) {
+                System.out.println("ID: " + client.getPerson().getUser().getId_user());
+                System.out.println("Nome: " + client.getPerson().getUser().getName());
+                System.out.println("Email: " + client.getPerson().getUser().getEmail());
+                System.out.println("Último Nome: " + client.getPerson().getLast_name());
+                System.out.println("CPF: " + client.getPerson().getCpf());
+                System.out.println("Data de Nascimento: " + client.getPerson().getBirth_date());
+                System.out.println("Número de Telefone: " + client.getPerson().getPhone_number());
+                System.out.println("Cidade: " + client.getPerson().getAddress().getCity());
+                System.out.println("Estado: " + client.getPerson().getAddress().getState());
+                System.out.println("País: " + client.getPerson().getAddress().getCountry());
+                System.out.println("Endereço: " + client.getPerson().getAddress().getAddress());
+                System.out.println("Número do Endereço: " + client.getPerson().getAddress().getAddress_number());
+                System.out.println("-----------------------");
+            }
+        }
+    }
+
+
+    public static void listarFornecedores(SupplierDAO supplierDAO) {
+        List<Supplier> suppliers = supplierDAO.getAllSuppliers();
+
+        if (suppliers.isEmpty()) {
+            System.out.println("Não há fornecedores cadastrados.");
+        } else {
+            System.out.println("Lista de Fornecedores:");
+            for (Supplier supplier : suppliers) {
+                System.out.println("ID: " + supplier.getUser().getId_user());
+                System.out.println("Nome: " + supplier.getUser().getName());
+                System.out.println("Email: " + supplier.getUser().getEmail());
+                System.out.println("CNPJ: " + supplier.getCnpj());
+                System.out.println("Data de Registro: " + supplier.getRegistration_date());
+                System.out.println("Cidade: " + supplier.getAddress().getCity());
+                System.out.println("Estado: " + supplier.getAddress().getState());
+                System.out.println("País: " + supplier.getAddress().getCountry());
+                System.out.println("Endereço: " + supplier.getAddress().getAddress());
+                System.out.println("Número do Endereço: " + supplier.getAddress().getAddress_number());
+                System.out.println("----------------------------------");
+            }
+        }
+    }
+
+
+    public static void listarProdutos(ProductDAO productDAO) {
+        List<Product> products = productDAO.getAllProducts();
+        if (products.isEmpty()) {
+            System.out.println("Não há produtos cadastrados.");
+        } else {
+            System.out.println("Lista de Produtos:");
+            for (Product product : products) {
+                System.out.println("ID: " + product.getId_product());
+                System.out.println("Descrição: " + product.getDescription());
+                System.out.println("Quantidade: " + product.getQuantity());
+                System.out.println("Preço: " + product.getPrice());
+                System.out.println("Fornecedor: " + product.getSupplier().getName());
+                System.out.println("----------------------------------");
+            }
+        }
+    }
+
     private void editarCliente() {
-
         try {
-            ClientDAO.selectClient();
-            System.out.print("Diga o id do cliente que você quer alterar: ");
-            int id_selecionado = scanner.nextInt();
+            // Listar clientes disponíveis
+            listarClientes(clientDAO);
 
-            scanner.nextLine();
+            System.out.print("Digite o ID do cliente que você deseja alterar: ");
+            int idSelecionado = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Novo Nome: ");
             String name = scanner.nextLine();
@@ -407,10 +543,11 @@ public class Menu {
             System.out.print("Novo CPF: ");
             String cpf = scanner.nextLine();
 
-            System.out.print("Nova Data de nascimento (YYYY-MM-DD): ");
-            Date birthDate = Date.valueOf(scanner.nextLine());
+            System.out.print("Nova Data de Nascimento (YYYY-MM-DD): ");
+            String birthDateString = scanner.nextLine();
+            Date birthDate = Date.valueOf(birthDateString);
 
-            System.out.print("Novo Número de telefone: ");
+            System.out.print("Novo Número de Telefone: ");
             String phoneNumber = scanner.nextLine();
 
             System.out.print("Nova Cidade: ");
@@ -425,27 +562,44 @@ public class Menu {
             System.out.print("Novo Endereço: ");
             String address = scanner.nextLine();
 
-            System.out.print("Novo Número do endereço: ");
+            System.out.print("Novo Número do Endereço: ");
             String addressNumber = scanner.nextLine();
 
-            clientDAO.updateClient(id_selecionado, name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+            // Criar um objeto Address com os novos valores
+            Address newAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criar um objeto User com os novos valores
+            User newUser = new User(name, email, senha);
+
+            // Criar um objeto Person com os novos valores
+            Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
+
+            // Criar um objeto Client com os novos valores
+            Client updatedClient = new Client(newPerson);
+            updatedClient.getPerson().getUser().setId_user(idSelecionado); // Definir o ID do usuário
+
+            // Atualizar o cliente no banco de dados
+            clientDAO.updateClient(updatedClient);
 
             System.out.println("Cliente editado com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao editar cliente: " + e.getMessage());
         }
-
     }
 
+
+
+
+
+
     private void editarVendedor() {
-
         try {
-            SellerDAO.selectSeller();
-            System.out.print("Diga o id do vendedor que você quer alterar: ");
-            int id_selecionado = scanner.nextInt();
+            // Listar vendedores disponíveis
+            listarVendedores(sellerDAO);
 
-            scanner.nextLine();
+            System.out.print("Digite o ID do vendedor que você deseja alterar: ");
+            int idSelecionado = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Novo Nome: ");
             String name = scanner.nextLine();
@@ -462,10 +616,11 @@ public class Menu {
             System.out.print("Novo CPF: ");
             String cpf = scanner.nextLine();
 
-            System.out.print("Nova Data de nascimento (YYYY-MM-DD): ");
-            Date birthDate = Date.valueOf(scanner.nextLine());
+            System.out.print("Nova Data de Nascimento (YYYY-MM-DD): ");
+            String birthDateString = scanner.nextLine();
+            Date birthDate = Date.valueOf(birthDateString);
 
-            System.out.print("Novo Número de telefone: ");
+            System.out.print("Novo Número de Telefone: ");
             String phoneNumber = scanner.nextLine();
 
             System.out.print("Nova Cidade: ");
@@ -480,27 +635,40 @@ public class Menu {
             System.out.print("Novo Endereço: ");
             String address = scanner.nextLine();
 
-            System.out.print("Novo Número do endereço: ");
+            System.out.print("Novo Número do Endereço: ");
             String addressNumber = scanner.nextLine();
 
-            sellerDAO.updateSeller(id_selecionado, name, email, senha, lastName, cpf, birthDate, phoneNumber, city, state, country, address, addressNumber);
+            // Criar um objeto Address com os novos valores
+            Address newAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criar um objeto User com os novos valores
+            User newUser = new User(name, email, senha);
+
+            // Criar um objeto Person com os novos valores
+            Person newPerson = new Person(lastName, cpf, birthDate, phoneNumber, newAddress, newUser);
+
+            // Criar um objeto Seller com os novos valores
+            Seller updatedSeller = new Seller(newPerson);
+            updatedSeller.getPerson().getUser().setId_user(idSelecionado); // Definir o ID do usuário
+
+            // Atualizar o vendedor no banco de dados
+            sellerDAO.updateSeller(updatedSeller);
 
             System.out.println("Vendedor editado com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao editar vendedor: " + e.getMessage());
         }
-
     }
 
+
     private void editarFornecedor() {
-
         try {
-            SupplierDAO.selectSupplier();
-            System.out.print("Diga o id do fornecedor que você quer alterar: ");
-            int id_selecionado = scanner.nextInt();
+            // Listar fornecedores disponíveis
+            listarFornecedores(supplierDAO);
 
-            scanner.nextLine();
+            System.out.print("Digite o ID do fornecedor que você deseja alterar: ");
+            int idSelecionado = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Novo Nome: ");
             String name = scanner.nextLine();
@@ -526,48 +694,107 @@ public class Menu {
             System.out.print("Novo Endereço: ");
             String address = scanner.nextLine();
 
-            System.out.print("Novo Número do endereço: ");
+            System.out.print("Novo Número do Endereço: ");
             String addressNumber = scanner.nextLine();
 
-            supplierDAO.updateSupplier(id_selecionado, name, email, senha, cnpj, city, state, country, address, addressNumber);
+            // Criar um objeto Address com os novos valores
+            Address newAddress = new Address(city, state, country, address, addressNumber);
+
+            // Criar um objeto User com os novos valores
+            User newUser = new User(name, email, senha);
+
+            // Criar um objeto Supplier com os novos valores
+            Supplier updatedSupplier = new Supplier(name, cnpj, newAddress, newUser);
+            updatedSupplier.getUser().setId_user(idSelecionado); // Definir o ID do usuário
+
+            // Atualizar o fornecedor no banco de dados
+            supplierDAO.updateSupplier(updatedSupplier);
 
             System.out.println("Fornecedor editado com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao editar fornecedor: " + e.getMessage());
         }
-
     }
 
-    private void editarProduto() {
 
+    private void editarProduto(SupplierDAO supplierDAO) {
         try {
-            ProductDAO.selectProduct();
-            System.out.print("Diga o id do produto que você quer alterar: ");
-            int id_selecionado = scanner.nextInt();
+            // Listar produtos disponíveis
+            listarProdutos(productDAO);
 
-            scanner.nextLine();
+            System.out.print("Digite o ID do produto que você deseja alterar: ");
+            int idSelecionado = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Nova Descrição: ");
-            String description = scanner.nextLine();
+            String novaDescricao = scanner.nextLine();
 
             System.out.print("Nova Quantidade: ");
-            int quantity = scanner.nextInt();
+            int novaQuantidade = Integer.parseInt(scanner.nextLine());
 
             System.out.print("Novo Preço: ");
-            float price = scanner.nextFloat();
+            float novoPreco = Float.parseFloat(scanner.nextLine());
 
-            System.out.print("Novo id de Fornecedor: ");
-            int id_supplier = scanner.nextInt();
+            // Listar fornecedores disponíveis
+            listarFornecedores(supplierDAO);
+            System.out.print("Digite o ID do fornecedor do produto: ");
+            int idFornecedor = Integer.parseInt(scanner.nextLine());
 
-            productDAO.updateProduct(id_selecionado, description, quantity, price, id_supplier);
+            // Obter o fornecedor pelo ID
+            Supplier fornecedor = supplierDAO.getSupplierById(idFornecedor);
+
+            // Criar um objeto Product com os novos valores
+            Product novoProduto = new Product( novaDescricao, novaQuantidade, novoPreco, fornecedor);
+
+            // Atualizar o produto no banco de dados
+            productDAO.updateProduct(novoProduto);
 
             System.out.println("Produto editado com sucesso!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao editar produto: " + e.getMessage());
         }
+    }
 
+
+    public static void deletarVendedor(SellerDAO sellerDAO, Scanner scanner) {
+        System.out.print("Digite o ID do vendedor que deseja deletar: ");
+        int idVendedor = scanner.nextInt();
+        try {
+            sellerDAO.deleteSeller(idVendedor);
+            System.out.println("Vendedor deletado com sucesso!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao deletar vendedor: " + e.getMessage());
+        }
+    }
+
+    public static void deletarCliente(ClientDAO clientDAO, Scanner scanner) {
+        System.out.print("Digite o ID do cliente que deseja deletar: ");
+        int idCliente = scanner.nextInt();
+        try {
+            clientDAO.deleteClient(idCliente);
+            System.out.println("Cliente deletado com sucesso!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao deletar cliente: " + e.getMessage());
+        }
+    }
+
+    public static void deletarFornecedor(SupplierDAO supplierDAO, Scanner scanner) {
+        System.out.print("Digite o ID do fornecedor que deseja deletar: ");
+        int idFornecedor = scanner.nextInt();
+        try {
+            supplierDAO.deleteSupplier(idFornecedor);
+            System.out.println("Fornecedor deletado com sucesso!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao deletar fornecedor: " + e.getMessage());
+        }
+    }
+
+    public static void deletarProduto(ProductDAO productDAO, Scanner scanner) {
+        System.out.print("Digite o ID do produto que deseja deletar: ");
+        int idProduto = scanner.nextInt();
+        productDAO.deleteProduct(idProduto);
+        System.out.println("Produto deletado com sucesso!");
     }
 
 
