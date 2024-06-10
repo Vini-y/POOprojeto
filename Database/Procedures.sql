@@ -156,7 +156,6 @@ BEGIN
 END //
 
 -- Procedure para inserir vendas na tabela Sale
-DROP PROCEDURE IF EXISTS insert_sale;
 CREATE PROCEDURE insert_sale (
     IN client_id INT,
     IN seller_id INT,
@@ -249,10 +248,11 @@ BEGIN
     SET name = p_name, email = p_email, senha = p_senha
     WHERE id_user = p_id_seller;
 
-    -- Get Address ID
-    SELECT address_id INTO address_id
-    FROM Person
-    WHERE id_person = p_id_seller;
+    -- Get Address ID by joining User and Person tables
+    SELECT p.address_id INTO address_id
+    FROM Person p
+    JOIN User u ON p.id_person = u.id_user
+    WHERE u.id_user = p_id_seller;
 
     -- Update Address
     UPDATE Address
@@ -285,10 +285,11 @@ BEGIN
     SET name = p_name, email = p_email, senha = p_senha
     WHERE id_user = p_id_supplier;
 
-    -- Get Address ID
-    SELECT address_id INTO address_id
-    FROM Supplier
-    WHERE id_supplier = p_id_supplier;
+    -- Get Address ID by joining User and Supplier tables
+    SELECT s.address_id INTO address_id
+    FROM Supplier s
+    JOIN User u ON s.id_supplier = u.id_user
+    WHERE u.id_user = p_id_supplier;
 
     -- Update Address
     UPDATE Address

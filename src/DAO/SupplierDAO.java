@@ -39,6 +39,43 @@ public class SupplierDAO {
         }
     }
 
+    public Supplier getSupplierByIdEdit(int id) {
+        String sql = "SELECT s.id_supplier, u.id_user, u.name AS user_name, u.email, u.senha, s.name AS supplier_name, s.cnpj, s.registration_date, s.address_id, " +
+                "a.city, a.state, a.country, a.address, a.address_number, a.id_address " +
+                "FROM supplier s " +
+                "JOIN user u ON s.id_supplier = u.id_user " +
+                "JOIN address a ON s.address_id = a.id_address " +
+                "WHERE s.id_supplier = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Criação do objeto User
+                User user = new User(rs.getInt("id_user"), rs.getString("user_name"), rs.getString("email"), rs.getString("senha"));
+                user.setId_user(rs.getInt("id_user"));
+
+                // Criação do objeto Address
+                Address address = new Address(rs.getString("city"), rs.getString("state"), rs.getString("country"), rs.getString("address"), rs.getString("address_number"));
+                address.setAddress_id(rs.getInt("id_address"));
+
+                // Criação do objeto Supplier
+                Supplier supplier = new Supplier(rs.getString("supplier_name"), rs.getString("cnpj"), null, address, user);
+                supplier.setRegistration_date(rs.getDate("registration_date"));
+
+                return supplier;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     public void updateSupplier(Supplier supplier) throws SQLException {
         String sql = "{CALL update_supplier(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 

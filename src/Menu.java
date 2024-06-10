@@ -23,6 +23,7 @@ public class Menu {
     private SaleItemDAO saleItemDAO;
     private String clienteTipo;
     private int clienteId;
+    private AddressDAO addressDAO;
 
 
     public Menu(int clienteId, String clienteTipo) {
@@ -35,6 +36,7 @@ public class Menu {
         saleDAO = new SaleDAO();
         payDAO = new PayDAO();
         saleItemDAO = new SaleItemDAO();
+        addressDAO = new AddressDAO();
 
         this.clienteTipo = clienteTipo;
         this.clienteId = clienteId;
@@ -359,10 +361,10 @@ public class Menu {
 
             System.out.println("Vendedor inserido com sucesso!");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Erro ao inserir vendedor: " + e.getMessage());
         }
     }
-
 
 
 
@@ -411,7 +413,7 @@ public class Menu {
             Address supplierAddress = new Address(city, state, country, address, addressNumber);
 
             // Criando o objeto User
-            User user = new User(1, name, email, senha);
+            User user = new User(1 ,name, email, senha);
 
             // Criando o objeto Supplier
             Supplier supplier = new Supplier(name, cnpj,null, supplierAddress, user);
@@ -421,6 +423,7 @@ public class Menu {
 
             System.out.println("Fornecedor inserido com sucesso!");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Erro ao cadastrar o fornecedor: " + e.getMessage());
         }
     }
@@ -483,6 +486,9 @@ public class Menu {
     }
 
 
+
+
+
     public static void listarVendedores(SellerDAO sellerDAO) {
         List<Seller> sellers = sellerDAO.getAllSellers();
 
@@ -509,7 +515,6 @@ public class Menu {
             }
         }
     }
-
 
 
     public static void listarClientes(ClientDAO clientDAO) {
@@ -566,7 +571,6 @@ public class Menu {
     }
 
 
-
     public static void listarProdutos(ProductDAO productDAO) {
         List<Product> products = productDAO.getAllProducts();
         if (products.isEmpty()) {
@@ -585,70 +589,109 @@ public class Menu {
     }
 
     private void editarCliente() {
-        try {
-            // Listar clientes disponíveis
+
+        List<Client> clients = clientDAO.getAllClients();
+
+        if (clients.isEmpty()) {
+            System.out.println("Não há clientes cadastrados.");
+        } else {
+
             listarClientes(clientDAO);
 
-            System.out.print("Digite o ID do cliente que você deseja alterar: ");
-            int idSelecionado = Integer.parseInt(scanner.nextLine());
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Digite o ID do cliente que deseja editar: ");
+            int id = scanner.nextInt();
+            scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Novo Nome: ");
-            String name = scanner.nextLine();
+            Client client = clientDAO.getClientById(id);
+            if (client == null) {
+                System.out.println("Cliente não encontrado!");
+                return;
+            }
 
-            System.out.print("Novo Email: ");
-            String email = scanner.nextLine();
+            boolean continuar = true;
+            while (continuar) {
 
-            System.out.print("Nova Senha: ");
-            String senha = scanner.nextLine();
+                System.out.println("Selecione o campo que deseja editar:");
+                System.out.println("1. Nome");
+                System.out.println("2. Email");
+                System.out.println("3. Último Nome");
+                System.out.println("4. CPF");
+                System.out.println("5. Data de Nascimento");
+                System.out.println("6. Número de Telefone");
+                System.out.println("7. Cidade");
+                System.out.println("8. Estado");
+                System.out.println("9. País");
+                System.out.println("10. Endereço");
+                System.out.println("11. Número do Endereço");
+                System.out.println("12. Salvar e sair");
+                System.out.println("13. Sair sem salvar");
 
-            System.out.print("Novo Sobrenome: ");
-            String lastName = scanner.nextLine();
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Novo CPF: ");
-            String cpf = scanner.nextLine();
-
-            System.out.print("Nova Data de Nascimento (YYYY-MM-DD): ");
-            String birthDateString = scanner.nextLine();
-            Date birthDate = Date.valueOf(birthDateString);
-
-            System.out.print("Novo Número de Telefone: ");
-            String phoneNumber = scanner.nextLine();
-
-            System.out.print("Nova Cidade: ");
-            String city = scanner.nextLine();
-
-            System.out.print("Novo Estado: ");
-            String state = scanner.nextLine();
-
-            System.out.print("Novo País: ");
-            String country = scanner.nextLine();
-
-            System.out.print("Novo Endereço: ");
-            String address = scanner.nextLine();
-
-            System.out.print("Novo Número do Endereço: ");
-            String addressNumber = scanner.nextLine();
-
-            // Criar um objeto Address com os novos valores
-            Address newAddress = new Address(city, state, country, address, addressNumber);
-
-            // Criar um objeto User com os novos valores
-            User newUser = new User(1, name, email, senha);
-
-            // Criar um objeto Person com os novos valores
-            Person newPerson = new Person(lastName, cpf, birthDate, null, phoneNumber, newAddress, newUser);
-
-            // Criar um objeto Client com os novos valores
-            Client updatedClient = new Client(newPerson);
-            updatedClient.getPerson().getUser().setId_user(idSelecionado); // Definir o ID do usuário
-
-            // Atualizar o cliente no banco de dados
-            clientDAO.updateClient(updatedClient);
-
-            System.out.println("Cliente editado com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erro ao editar cliente: " + e.getMessage());
+                switch (opcao) {
+                    case 1:
+                        System.out.print("Novo Nome: ");
+                        client.getPerson().getUser().setName(scanner.nextLine());
+                        break;
+                    case 2:
+                        System.out.print("Novo Email: ");
+                        client.getPerson().getUser().setEmail(scanner.nextLine());
+                        break;
+                    case 3:
+                        System.out.print("Novo Último Nome: ");
+                        client.getPerson().setLast_name(scanner.nextLine());
+                        break;
+                    case 4:
+                        System.out.print("Novo CPF: ");
+                        client.getPerson().setCpf(scanner.nextLine());
+                        break;
+                    case 5:
+                        System.out.print("Nova Data de Nascimento (yyyy-mm-dd): ");
+                        client.getPerson().setBirth_date(Date.valueOf(scanner.nextLine()));
+                        break;
+                    case 6:
+                        System.out.print("Novo Número de Telefone: ");
+                        client.getPerson().setPhone_number(scanner.nextLine());
+                        break;
+                    case 7:
+                        System.out.print("Nova Cidade: ");
+                        client.getPerson().getAddress().setCity(scanner.nextLine());
+                        break;
+                    case 8:
+                        System.out.print("Novo Estado: ");
+                        client.getPerson().getAddress().setState(scanner.nextLine());
+                        break;
+                    case 9:
+                        System.out.print("Novo País: ");
+                        client.getPerson().getAddress().setCountry(scanner.nextLine());
+                        break;
+                    case 10:
+                        System.out.print("Novo Endereço: ");
+                        client.getPerson().getAddress().setAddress(scanner.nextLine());
+                        break;
+                    case 11:
+                        System.out.print("Novo Número do Endereço: ");
+                        client.getPerson().getAddress().setAddress_number(scanner.nextLine());
+                        break;
+                    case 12:
+                        try {
+                            clientDAO.updateClient(client);
+                            addressDAO.updateAddress(client.getPerson().getAddress());
+                            System.out.println("Cliente atualizado com sucesso!");
+                        } catch (SQLException e) {
+                            System.out.println("Erro ao atualizar o cliente: " + e.getMessage());
+                        }
+                        continuar = false;
+                        break;
+                    case 13:
+                        continuar = false;
+                        break;
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+            }
         }
     }
 
@@ -658,126 +701,202 @@ public class Menu {
 
 
     private void editarVendedor() {
-        try {
-            // Listar vendedores disponíveis
+        List<Seller> sellers = sellerDAO.getAllSellers();
+        if (sellers.isEmpty()) {
+            System.out.println("Não há vendedores cadastrados.");
+        } else {
+
             listarVendedores(sellerDAO);
 
-            System.out.print("Digite o ID do vendedor que você deseja alterar: ");
-            int idSelecionado = Integer.parseInt(scanner.nextLine());
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Digite o ID do vendedor que deseja editar: ");
+            int id = scanner.nextInt();
+            scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Novo Nome: ");
-            String name = scanner.nextLine();
+            Seller seller = sellerDAO.getSellerById(id);
+            if (seller == null) {
+                System.out.println("Vendedor não encontrado!");
+                return;
+            }
 
-            System.out.print("Novo Email: ");
-            String email = scanner.nextLine();
 
-            System.out.print("Nova Senha: ");
-            String senha = scanner.nextLine();
+            boolean continuar = true;
+            while (continuar) {
+                System.out.println("Selecione o campo que deseja editar:");
+                System.out.println("1. Nome");
+                System.out.println("2. Email");
+                System.out.println("3. Último Nome");
+                System.out.println("4. CPF");
+                System.out.println("5. Data de Nascimento");
+                System.out.println("6. Número de Telefone");
+                System.out.println("7. Cidade");
+                System.out.println("8. Estado");
+                System.out.println("9. País");
+                System.out.println("10. Endereço");
+                System.out.println("11. Número do Endereço");
+                System.out.println("12. Salvar e sair");
+                System.out.println("13. Sair sem salvar");
 
-            System.out.print("Novo Sobrenome: ");
-            String lastName = scanner.nextLine();
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Novo CPF: ");
-            String cpf = scanner.nextLine();
-
-            System.out.print("Nova Data de Nascimento (YYYY-MM-DD): ");
-            String birthDateString = scanner.nextLine();
-            Date birthDate = Date.valueOf(birthDateString);
-
-            System.out.print("Novo Número de Telefone: ");
-            String phoneNumber = scanner.nextLine();
-
-            System.out.print("Nova Cidade: ");
-            String city = scanner.nextLine();
-
-            System.out.print("Novo Estado: ");
-            String state = scanner.nextLine();
-
-            System.out.print("Novo País: ");
-            String country = scanner.nextLine();
-
-            System.out.print("Novo Endereço: ");
-            String address = scanner.nextLine();
-
-            System.out.print("Novo Número do Endereço: ");
-            String addressNumber = scanner.nextLine();
-
-            // Criar um objeto Address com os novos valores
-            Address newAddress = new Address(city, state, country, address, addressNumber);
-
-            // Criar um objeto User com os novos valores
-            User newUser = new User(1, name, email, senha);
-
-            // Criar um objeto Person com os novos valores
-            Person newPerson = new Person(lastName, cpf, birthDate, null, phoneNumber, newAddress, newUser);
-
-            // Criar um objeto Seller com os novos valores
-            Seller updatedSeller = new Seller(newPerson);
-            updatedSeller.getPerson().getUser().setId_user(idSelecionado); // Definir o ID do usuário
-
-            // Atualizar o vendedor no banco de dados
-            sellerDAO.updateSeller(updatedSeller);
-
-            System.out.println("Vendedor editado com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erro ao editar vendedor: " + e.getMessage());
+                switch (opcao) {
+                    case 1:
+                        System.out.print("Novo Nome: ");
+                        seller.getPerson().getUser().setName(scanner.nextLine());
+                        break;
+                    case 2:
+                        System.out.print("Novo Email: ");
+                        seller.getPerson().getUser().setEmail(scanner.nextLine());
+                        break;
+                    case 3:
+                        System.out.print("Novo Último Nome: ");
+                        seller.getPerson().setLast_name(scanner.nextLine());
+                        break;
+                    case 4:
+                        System.out.print("Novo CPF: ");
+                        seller.getPerson().setCpf(scanner.nextLine());
+                        break;
+                    case 5:
+                        System.out.print("Nova Data de Nascimento (yyyy-mm-dd): ");
+                        seller.getPerson().setBirth_date(Date.valueOf(scanner.nextLine()));
+                        break;
+                    case 6:
+                        System.out.print("Novo Número de Telefone: ");
+                        seller.getPerson().setPhone_number(scanner.nextLine());
+                        break;
+                    case 7:
+                        System.out.print("Nova Cidade: ");
+                        seller.getPerson().getAddress().setCity(scanner.nextLine());
+                        break;
+                    case 8:
+                        System.out.print("Novo Estado: ");
+                        seller.getPerson().getAddress().setState(scanner.nextLine());
+                        break;
+                    case 9:
+                        System.out.print("Novo País: ");
+                        seller.getPerson().getAddress().setCountry(scanner.nextLine());
+                        break;
+                    case 10:
+                        System.out.print("Novo Endereço: ");
+                        seller.getPerson().getAddress().setAddress(scanner.nextLine());
+                        break;
+                    case 11:
+                        System.out.print("Novo Número do Endereço: ");
+                        seller.getPerson().getAddress().setAddress_number(scanner.nextLine());
+                        break;
+                    case 12:
+                        try {
+                            sellerDAO.updateSeller(seller);
+                            addressDAO.updateAddress(seller.getPerson().getAddress());
+                            System.out.println("Vendedor atualizado com sucesso!");
+                        } catch (SQLException e) {
+                            System.out.println("Erro ao atualizar o cliente: " + e.getMessage());
+                        }
+                        continuar = false;
+                        break;
+                    case 13:
+                        continuar = false;
+                        break;
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+            }
         }
     }
 
 
     private void editarFornecedor() {
-        try {
-            // Listar fornecedores disponíveis
+
+        List<Supplier> suppliers = supplierDAO.getAllSuppliers();
+        if (suppliers.isEmpty()) {
+            System.out.println("Não há fornecedores cadastrados.");
+        } else {
             listarFornecedores(supplierDAO);
 
-            System.out.print("Digite o ID do fornecedor que você deseja alterar: ");
-            int idSelecionado = Integer.parseInt(scanner.nextLine());
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Digite o ID do fornecedor que deseja editar: ");
+            int id = scanner.nextInt();
+            scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Novo Nome: ");
-            String name = scanner.nextLine();
+            Supplier supplier = supplierDAO.getSupplierByIdEdit(id);
+            if (supplier == null) {
+                System.out.println("Fornecedor não encontrado!");
+                return;
+            }
 
-            System.out.print("Novo Email: ");
-            String email = scanner.nextLine();
+            boolean continuar = true;
+            while (continuar) {
+                System.out.println("Selecione o campo que deseja editar:");
+                System.out.println("1. Nome");
+                System.out.println("2. Email");
+                System.out.println("3. Senha");
+                System.out.println("4. CNPJ");
+                System.out.println("5. Cidade");
+                System.out.println("6. Estado");
+                System.out.println("7. País");
+                System.out.println("8. Endereço");
+                System.out.println("9. Número do Endereço");
+                System.out.println("10. Salvar e sair");
+                System.out.println("11. Sair sem salvar");
+                System.out.print("Digite o que será editado: ");
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Consome a nova linha
 
-            System.out.print("Nova Senha: ");
-            String senha = scanner.nextLine();
-
-            System.out.print("Novo CNPJ: ");
-            String cnpj = scanner.nextLine();
-
-            System.out.print("Nova Cidade: ");
-            String city = scanner.nextLine();
-
-            System.out.print("Novo Estado: ");
-            String state = scanner.nextLine();
-
-            System.out.print("Novo País: ");
-            String country = scanner.nextLine();
-
-            System.out.print("Novo Endereço: ");
-            String address = scanner.nextLine();
-
-            System.out.print("Novo Número do Endereço: ");
-            String addressNumber = scanner.nextLine();
-
-            // Criar um objeto Address com os novos valores
-            Address newAddress = new Address(city, state, country, address, addressNumber);
-
-            // Criar um objeto User com os novos valores
-            User newUser = new User(1, name, email, senha);
-
-            // Criar um objeto Supplier com os novos valores
-            Supplier updatedSupplier = new Supplier(name, cnpj, null, newAddress, newUser);
-            updatedSupplier.getUser().setId_user(idSelecionado); // Definir o ID do usuário
-
-            // Atualizar o fornecedor no banco de dados
-            supplierDAO.updateSupplier(updatedSupplier);
-
-            System.out.println("Fornecedor editado com sucesso!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Erro ao editar fornecedor: " + e.getMessage());
+                switch (opcao) {
+                    case 1:
+                        System.out.print("Novo Nome: ");
+                        supplier.getUser().setName(scanner.nextLine());
+                        break;
+                    case 2:
+                        System.out.print("Novo Email: ");
+                        supplier.getUser().setEmail(scanner.nextLine());
+                        break;
+                    case 3:
+                        System.out.print("Nova Senha: ");
+                        supplier.getUser().setSenha(scanner.nextLine());
+                        break;
+                    case 4:
+                        System.out.print("Novo CNPJ: ");
+                        supplier.setCnpj(scanner.nextLine());
+                        break;
+                    case 5:
+                        System.out.print("Nova Cidade: ");
+                        supplier.getAddress().setCity(scanner.nextLine());
+                        break;
+                    case 6:
+                        System.out.print("Novo Estado: ");
+                        supplier.getAddress().setState(scanner.nextLine());
+                        break;
+                    case 7:
+                        System.out.print("Novo País: ");
+                        supplier.getAddress().setCountry(scanner.nextLine());
+                        break;
+                    case 8:
+                        System.out.print("Novo Endereço: ");
+                        supplier.getAddress().setAddress(scanner.nextLine());
+                        break;
+                    case 9:
+                        System.out.print("Novo Número do Endereço: ");
+                        supplier.getAddress().setAddress_number(scanner.nextLine());
+                        break;
+                    case 10:
+                        try {
+                            supplierDAO.updateSupplier(supplier);
+                            addressDAO.updateAddress(supplier.getAddress());
+                            System.out.println("Fornecedor atualizado com sucesso!");
+                        } catch (SQLException e) {
+                            System.out.println("Erro ao atualizar o fornecedor: " + e.getMessage());
+                        }
+                        continuar = false;
+                        break;
+                    case 11:
+                        continuar = false;
+                        break;
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+            }
         }
     }
 
