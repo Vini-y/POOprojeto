@@ -122,7 +122,7 @@ public class ClientDAO {
     }
 
     public Client getClientById(int id_client) {
-        String sql = "SELECT u.id_user, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.registration_date, p.phone_number, a.city, a.state, a.country, a.address, a.address_number " +
+        String sql = "SELECT u.id_user, u.name, u.email, u.senha, p.last_name, p.cpf, p.birth_date, p.registration_date, p.phone_number, a.id_address, a.city, a.state, a.country, a.address, a.address_number " +
                 "FROM Client c " +
                 "JOIN Person p ON c.id_client = p.id_person " +
                 "JOIN Address a ON p.address_id = a.id_address " +
@@ -143,9 +143,9 @@ public class ClientDAO {
                     String last_name = rs.getString("last_name");
                     String cpf = rs.getString("cpf");
                     Date birth_date = rs.getDate("birth_date");
-                    // Include the registration date from the result set
                     Date registration_date = rs.getDate("registration_date");
                     String phone_number = rs.getString("phone_number");
+                    int address_id = rs.getInt("id_address");
                     String city = rs.getString("city");
                     String state = rs.getString("state");
                     String country = rs.getString("country");
@@ -154,7 +154,7 @@ public class ClientDAO {
 
                     User user = new User(id_user, name, email, senha);
                     Address addr = new Address(city, state, country, address, address_number);
-                    // Now, include the registration date in the Person object
+                    addr.setAddress_id(address_id);
                     Person person = new Person(last_name, cpf, birth_date, registration_date, phone_number, addr, user);
 
                     client = new Client(person);
@@ -163,8 +163,8 @@ public class ClientDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return client;
     }
+
 
 }

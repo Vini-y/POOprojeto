@@ -400,10 +400,11 @@ DELIMITER //
 CREATE PROCEDURE fechamento_do_dia()
 BEGIN
     -- Variáveis para armazenar os resultados
-    DECLARE total_sales_value FLOAT DEFAULT 0;
+    DECLARE total_sales_value_debit FLOAT DEFAULT 0;
+    DECLARE total_sales_value_money FLOAT DEFAULT 0;
 
     -- Selecionar todas as vendas realizadas no dia atual
-    SELECT 
+    SELECT
         s.id_sale,
         s.id_client,
         s.id_seller,
@@ -411,22 +412,33 @@ BEGIN
         s.payment,
         s.total_value,
         s.parcelas
-    FROM 
+    FROM
         Sale s
-    WHERE 
+    WHERE
         DATE(s.sale_date) = CURDATE();
 
-    -- Calcular a soma dos valores totais das vendas do dia atual
-    SELECT 
-        SUM(s.total_value) INTO total_sales_value
-    FROM 
+    -- Calcular a soma dos valores totais das vendas do dia atual feitas em débito
+    SELECT
+        SUM(s.total_value) INTO total_sales_value_debit
+    FROM
         Sale s
-    WHERE 
-        DATE(s.sale_date) = CURDATE();
+    WHERE
+        DATE(s.sale_date) = CURDATE()
+        AND s.payment = 2;
 
-    -- Exibir o valor total das vendas do dia atual
-    SELECT 
-        total_sales_value AS total_sales_value_of_the_day;
+    -- Calcular a soma dos valores totais das vendas do dia atual feitas em dinheiro
+    SELECT
+        SUM(s.total_value) INTO total_sales_value_money
+    FROM
+        Sale s
+    WHERE
+        DATE(s.sale_date) = CURDATE()
+        AND s.payment = 1;
+
+    -- Exibir os valores totais das vendas do dia atual
+    SELECT
+        total_sales_value_debit AS total_sales_value_debit_of_the_day,
+        total_sales_value_money AS total_sales_value_money_of_the_day;
 END //
 
 DELIMITER ;

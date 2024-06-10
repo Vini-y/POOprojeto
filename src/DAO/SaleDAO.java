@@ -147,8 +147,10 @@ public class SaleDAO {
             if (stmt.getMoreResults()) {
                 try (ResultSet rs = stmt.getResultSet()) {
                     if (rs.next()) {
-                        float totalSalesValueOfTheDay = rs.getFloat("total_sales_value_of_the_day");
-                        System.out.println("Valor total das vendas do dia: " + totalSalesValueOfTheDay);
+                        float totalSalesValueDebitOfTheDay = rs.getFloat("total_sales_value_debit_of_the_day");
+                        float totalSalesValueMoneyOfTheDay = rs.getFloat("total_sales_value_money_of_the_day");
+                        System.out.println("Valor total das vendas em débito do dia: " + totalSalesValueDebitOfTheDay);
+                        System.out.println("Valor total das vendas em dinheiro do dia: " + totalSalesValueMoneyOfTheDay);
                     }
                 }
             }

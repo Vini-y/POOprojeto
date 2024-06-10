@@ -184,7 +184,7 @@ public class Menu {
                         deletarProduto(productDAO, scanner);
                         break;
                     case "Registrar Venda":
-                        registarVenda(scanner);
+                        registrarVenda(scanner);
                         break;
                     case "Listar Vendas":
                         SaleDAO.listarVendas();
@@ -594,7 +594,8 @@ public class Menu {
 
         if (clients.isEmpty()) {
             System.out.println("Não há clientes cadastrados.");
-        } else {
+        }
+        else {
 
             listarClientes(clientDAO);
 
@@ -679,6 +680,7 @@ public class Menu {
                         try {
                             clientDAO.updateClient(client);
                             addressDAO.updateAddress(client.getPerson().getAddress());
+                            System.out.println(client.getPerson().getAddress().getCity());
                             System.out.println("Cliente atualizado com sucesso!");
                         } catch (SQLException e) {
                             System.out.println("Erro ao atualizar o cliente: " + e.getMessage());
@@ -1012,7 +1014,7 @@ public class Menu {
         }
     }
 
-    private void registarVenda(Scanner scanner) {
+    private void registrarVenda(Scanner scanner) {
         /*
         Somente vendedor pode registrar uma venda. Dados: Cliente (Cliente); itens (ArrayList<Produto, qtde>);
         tipoPagamento (crédito, débito ou dinheiro);

@@ -67,6 +67,14 @@ public class AddressDAO {
         String sql = "UPDATE Address SET city = ?, state = ?, country = ?, address = ?, address_number = ? WHERE id_address = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            System.out.println("SET city = " + address.getCity());
+            System.out.println("SET state = " + address.getState());
+            System.out.println("SET country = " + address.getCountry());
+            System.out.println("SET address = " + address.getAddress());
+            System.out.println("SET address_number = " + address.getAddress_number());
+            System.out.println("WHERE id_address = " + address.getAddress_id());
+
             statement.setString(1, address.getCity());
             statement.setString(2, address.getState());
             statement.setString(3, address.getCountry());
