@@ -44,6 +44,8 @@ public class ProductDAO {
                 stmt.setFloat(4, product.getPrice());
                 stmt.setInt(5, product.getSupplier().getUser().getId_user());
 
+                System.out.println(product.getSupplier().getUser().getId_user());
+
                 stmt.executeUpdate();
             } else {
                 System.out.println("Erro ao conectar ao banco de dados.");

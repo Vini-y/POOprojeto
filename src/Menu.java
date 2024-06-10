@@ -905,36 +905,77 @@ public class Menu {
 
     private void editarProduto(SupplierDAO supplierDAO) {
         try {
+            Scanner scanner = new Scanner(System.in);
+
             // Listar produtos disponíveis
             listarProdutos(productDAO);
 
             System.out.print("Digite o ID do produto que você deseja alterar: ");
             int idSelecionado = Integer.parseInt(scanner.nextLine());
 
-            System.out.print("Nova Descrição: ");
-            String novaDescricao = scanner.nextLine();
+            // Obter o produto pelo ID
+            Product produto = productDAO.getProductById(idSelecionado);
+            if (produto == null) {
+                System.out.println("Produto não encontrado!");
+                return;
+            }
 
-            System.out.print("Nova Quantidade: ");
-            int novaQuantidade = Integer.parseInt(scanner.nextLine());
+            boolean continuar = true;
+            while (continuar) {
+                System.out.println("Selecione o campo que deseja editar:");
+                System.out.println("1. Descrição");
+                System.out.println("2. Quantidade");
+                System.out.println("3. Preço");
+                System.out.println("4. Fornecedor");
+                System.out.println("5. Salvar e sair");
+                System.out.println("6. Sair sem salvar");
 
-            System.out.print("Novo Preço: ");
-            float novoPreco = Float.parseFloat(scanner.nextLine());
+                int opcao = scanner.nextInt();
+                scanner.nextLine(); // Consome a nova linha
 
-            // Listar fornecedores disponíveis
-            listarFornecedores(supplierDAO);
-            System.out.print("Digite o ID do fornecedor do produto: ");
-            int idFornecedor = Integer.parseInt(scanner.nextLine());
+                switch (opcao) {
+                    case 1:
+                        System.out.print("Nova Descrição: ");
+                        produto.setDescription(scanner.nextLine());
+                        break;
+                    case 2:
+                        System.out.print("Nova Quantidade: ");
+                        produto.setQuantity(Integer.parseInt(scanner.nextLine()));
+                        break;
+                    case 3:
+                        System.out.print("Novo Preço: ");
+                        produto.setPrice(Float.parseFloat(scanner.nextLine()));
+                        break;
+                    case 4:
+                        // Listar fornecedores disponíveis
+                        listarFornecedores(supplierDAO);
+                        System.out.print("Digite o ID do fornecedor do produto: ");
+                        int idFornecedor = Integer.parseInt(scanner.nextLine());
 
-            // Obter o fornecedor pelo ID
-            Supplier fornecedor = supplierDAO.getSupplierById(idFornecedor);
-
-            // Criar um objeto Product com os novos valores
-            Product novoProduto = new Product(1, novaDescricao, novaQuantidade, novoPreco, fornecedor);
-
-            // Atualizar o produto no banco de dados
-            productDAO.updateProduct(novoProduto);
-
-            System.out.println("Produto editado com sucesso!");
+                        // Obter o fornecedor pelo ID
+                        Supplier fornecedor = supplierDAO.getSupplierByIdEdit(idFornecedor);
+                        if (fornecedor == null) {
+                            System.out.println("Fornecedor não encontrado!");
+                            break;
+                        }
+                        produto.setSupplier(fornecedor);
+                        break;
+                    case 5:
+                        try {
+                            productDAO.updateProduct(produto);
+                            System.out.println("Produto atualizado com sucesso!");
+                        } catch (SQLException e) {
+                            System.out.println("Erro ao atualizar o produto: " + e.getMessage());
+                        }
+                        continuar = false;
+                        break;
+                    case 6:
+                        continuar = false;
+                        break;
+                    default:
+                        System.out.println("Opção inválida!");
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erro ao editar produto: " + e.getMessage());
@@ -1071,10 +1112,14 @@ public class Menu {
         }
 
         int parcelas = 1;
-        if (tipoPagamento == 3 && precoTotal >= 1000){
+        if (tipoPagamento == 3 && precoTotal >= 1000) {
             System.out.println("Crédito\n=======\nParcelas em até 5x sem juros.\nJuros de 5% para parcelas acima de 5x.\n");
             System.out.println("\nNúmero de parcelas (1 para ignorar): ");
             parcelas = scanner.nextInt();
+
+            if (parcelas > 5) {
+                precoTotal *= 1.05;  // Adiciona 5% de juros
+            }
         }
 
         Sale sale = new Sale(0, client, seller, new Timestamp(2024), payment, precoTotal, parcelas);
