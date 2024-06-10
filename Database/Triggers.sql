@@ -3,7 +3,7 @@ DROP TRIGGER if exists `supplier_insert_trigger`;
 DROP TRIGGER if exists `sale_insert_trigger`;
 DROP TRIGGER if exists `ItemTotalValue`;
 DROP TRIGGER if exists `SaleTotalValue`;
-DROP TRIGGER if exists ` update_product_quantity`;
+DROP TRIGGER if exists `update_product_quantity`;
 
 
 -- Trigger para inserir a data de criação automaticamente na tabela `Person`
@@ -36,12 +36,20 @@ BEGIN
     SET NEW.total_value = NEW.quantity * productPrice;
 END //
 
-CREATE TRIGGER SaleTotalValue AFTER INSERT ON Sale_itens
+DELIMITER //
+
+CREATE TRIGGER SaleTotalValue
+AFTER INSERT ON Sale_itens
 FOR EACH ROW
 BEGIN
-    DECLARE saleTotal FLOAT;
-    SET saleTotal = (SELECT SUM(total_value) FROM Sale_itens WHERE sale_id = NEW.sale_id);
-    UPDATE Sale SET total_value = saleTotal WHERE id_sale = NEW.sale_id;
+    DECLARE numParcelas INT;
+    -- Obtém o número de parcelas da venda
+    SELECT parcelas INTO numParcelas FROM Sale WHERE id_sale = NEW.sale_id;
+
+    -- Se o número de parcelas for maior que 5, aplica um acréscimo de 5% ao total
+    IF numParcelas > 5 THEN
+        UPDATE Sale SET total_value = total_value * 1.05 WHERE id_sale = NEW.sale_id;
+  END IF;
 END //
 
 

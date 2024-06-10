@@ -1063,6 +1063,12 @@ public class Menu {
 
         System.out.println("\nRegistrar uma venda\n===================");
 
+        try {
+            listarClientes(clientDAO);
+        } catch (Exception e){
+            System.out.print(e.getMessage());
+        }
+
         System.out.print("\nId do cliente: ");
         int idCliente = scanner.nextInt();
 
@@ -1093,7 +1099,7 @@ public class Menu {
                     qtde.add(quantidadeProduto);
                     break;
                 case 2:
-                    System.out.println("Finalizando a venda...");
+                    System.out.println("...");
                     break;
                 default:
                     System.out.println("Entrada inválida!");
@@ -1113,12 +1119,15 @@ public class Menu {
 
         int parcelas = 1;
         if (tipoPagamento == 3 && precoTotal >= 1000) {
-            System.out.println("Crédito\n=======\nParcelas em até 5x sem juros.\nJuros de 5% para parcelas acima de 5x.\n");
-            System.out.println("\nNúmero de parcelas (1 para ignorar): ");
+            System.out.println("Crédito\n=======\nParcelas em até 5x sem juros.\nJuros de 5% para parcelas acima de 5x.");
+            System.out.print("\nNúmero de parcelas (máximo 10): ");
             parcelas = scanner.nextInt();
 
             if (parcelas > 5) {
                 precoTotal *= 1.05;  // Adiciona 5% de juros
+            }
+            if (parcelas > 10) {
+                System.out.println("Número máximo de parcelas atingido. Tente novamente.");
             }
         }
 
